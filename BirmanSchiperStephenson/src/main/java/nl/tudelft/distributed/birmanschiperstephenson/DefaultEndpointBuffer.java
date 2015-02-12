@@ -19,19 +19,23 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 	@Override
 	public void receive(Object message, int sender, int[] vector) throws RemoteException {
 		if(passesCondition(sender, vector)){
-			buffer.add(Tuple3.create(message, sender, vector));
-			int foundAmount;
+            synchronized (buffer) {
+                buffer.add(Tuple3.create(message, sender, vector));
+            }
+            int foundAmount;
 			do{
 				foundAmount = 0;
 				for(int i = 0 ; i < buffer.size() ; i++){
 					Tuple3<Object, Integer, int[]> entry = buffer.get(i);
 					if(passesCondition(entry._2, entry._3)){
 						endpoint.deliver(message);
-						endpoint.vectorClock()[sender]++;
-						buffer.remove(i);
-						foundAmount++;
-						i--;
-					}
+                        synchronized (endpoint) {
+                            endpoint.vectorClock()[sender]++;
+                            buffer.remove(i);
+                        }
+                        foundAmount++;
+                        //i--;
+                    }
 				}
 			} while(foundAmount != 0);
 		} else{

@@ -3,48 +3,47 @@ package nl.tudelft.distributed.birmanschiperstephenson;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 public class Test {
     private final static int INSTANCES = 10;
 
     public static void main(String[] args) {
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
         try {
-			if(System.getSecurityManager() == null){
-                System.setSecurityManager(new SecurityManager());
-            }
-			Registry registry = LocateRegistry.createRegistry(1337);
-			
-			Registry remoteRegistry = LocateRegistry.getRegistry("localhost", 1337);
+            LocateRegistry.createRegistry(1337);
+        } catch (RemoteException e) {
+            System.err.println("Could not create registry...: " + e);
+        }
 
-            String[] remotes = new String[INSTANCES];
-            //String[] names = new String[INSTANCES];
-            for (int i = 0; i < INSTANCES; i++) {
-                //names[i] = DefaultEndpointBuffer.class.getName() +"_"+ i;
-                remotes[i] = "rmi://localhost:1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
-            }
+        String[] remotes = new String[INSTANCES];
+        for (int i = 0; i < INSTANCES; i++) {
+            remotes[i] = "rmi://localhost:1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
+        }
 
-            for (int i = 0; i < INSTANCES; i++) {
-                try {
-                    Naming.bind(remotes[i], new DefaultEndpointBuffer(new RandomDelaySenderEndpoint(0, remotes, 0)));
-                } catch (AlreadyBoundException | MalformedURLException e) {
-                    System.err.println("YOU SUCK AT CONSTRUCTING URLS: " + e);
-                }
-            }
-            //IEndpointBuffer endpointBuffer = (IEndpointBuffer) remoteRegistry.lookup(remotes[1]);
-
+        Thread[] threads = new Thread[INSTANCES];
+        for (int i = 0; i < INSTANCES; i++) {
             try {
-                IEndpointBuffer endpointBuffer = (IEndpointBuffer) Naming.lookup(remotes[1]);
-                endpointBuffer.receive("Blabalbal", 0, new int[0]);
-            } catch (MalformedURLException e) {
-                System.err.println("YOU SUCK AT CONSTRUCTING URLS: " + e);
+                RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, 10);
+                Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
+                Thread endpointThread = new Thread(endpoint);
+                threads[i] = endpointThread;
+                endpointThread.start();
+            } catch (RemoteException | AlreadyBoundException | MalformedURLException e) {
+                e.printStackTrace();
             }
-
-        } catch (RemoteException | NotBoundException e) {
-            e.printStackTrace();
-		}
-	}
+        }
+        for (Thread endpointThread : threads) {
+            try {
+                endpointThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("done");
+    }
 }
