@@ -9,19 +9,17 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 	
 	private static final long serialVersionUID = -7906377175640753915L;
 	private List<Tuple3<Object, Integer, int[]>> buffer;
-	private int[] vectorClock;
 	private IEndpoint endpoint;
 	
-	public DefaultEndpointBuffer(int n, IEndpoint endpoint) throws RemoteException {
+	public DefaultEndpointBuffer(IEndpoint endpoint) throws RemoteException {
 		buffer = new LinkedList<Tuple3<Object,Integer, int[]>>();
-		this.vectorClock = new int[n];
 		this.endpoint = endpoint;
 	}
 	
 	@Override
 	public void receive(Object message, int sender, int[] vector) throws RemoteException {
 		if(passesCondition(sender, vector)){
-			endpoint.deliver(message);
+			buffer.add(Tuple3.create(message, sender, vector));
 			int foundAmount;
 			do{
 				foundAmount = 0;
@@ -29,6 +27,7 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 					Tuple3<Object, Integer, int[]> entry = buffer.get(i);
 					if(passesCondition(entry._2, entry._3)){
 						endpoint.deliver(message);
+						endpoint.vectorClock()[sender]++;
 						buffer.remove(i);
 						foundAmount++;
 						i--;
@@ -41,7 +40,7 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 	}
 	
 	private boolean passesCondition(int sender, int[] vector){
-		int[] localClock = vectorClock.clone();
+		int[] localClock = endpoint.vectorClock().clone();
 		localClock[sender] += 1;
 		for(int i = 0 ; i < localClock.length && i < vector.length ; i++){
 			if(localClock[sender] < vector[i]){

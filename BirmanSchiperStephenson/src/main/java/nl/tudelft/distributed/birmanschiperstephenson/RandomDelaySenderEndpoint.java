@@ -1,13 +1,17 @@
 package nl.tudelft.distributed.birmanschiperstephenson;
 
+import java.util.Random;
+
+
 public class RandomDelaySenderEndpoint extends AbstractEndpoint implements Runnable {
 
-	private int nodeId;
 	private int numberOfMessages;
+	private Random random;
 	
-	public RandomDelaySenderEndpoint(int nodeId, int numberOfMessages) {
-		this.nodeId = nodeId;
+	public RandomDelaySenderEndpoint(int nodeId, String[] remotes, int numberOfMessages) {
+		super(nodeId, remotes);
 		this.numberOfMessages = numberOfMessages;
+		this.random = new Random();
 	}
 
 	@Override
@@ -19,7 +23,11 @@ public class RandomDelaySenderEndpoint extends AbstractEndpoint implements Runna
 	public void run() {
 		Thread.currentThread().setName(String.format("Node[%d]", nodeId));
 		for(int messageNumber = 0 ; messageNumber < numberOfMessages ; messageNumber++){
-			
+			try {
+				Thread.sleep(random.nextInt(500) + 100);
+			} catch (InterruptedException e) {
+			}
+			broadcast(messageNumber);
 		}
 	}
 
