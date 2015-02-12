@@ -12,8 +12,8 @@ public class RandomDelaySenderEndpoint extends AbstractEndpoint implements Runna
 
 	@Override
 	public void deliver(Object message) {
-		System.out.println();
-	}
+        System.out.println(message.toString());
+    }
 
 	@Override
 	public void run() {
