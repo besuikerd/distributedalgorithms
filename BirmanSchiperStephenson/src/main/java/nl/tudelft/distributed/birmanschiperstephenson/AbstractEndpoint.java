@@ -29,7 +29,8 @@ public abstract class AbstractEndpoint implements IEndpoint{
 					((IEndpointBuffer) o).receive(message, nodeId, vectorClock);
 				}
 			} catch (MalformedURLException | RemoteException | NotBoundException e) {
-			}
+                e.printStackTrace();
+            }
 		}
 	}
 	
