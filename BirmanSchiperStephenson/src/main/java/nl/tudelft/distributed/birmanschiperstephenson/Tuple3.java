@@ -1,6 +1,9 @@
 package nl.tudelft.distributed.birmanschiperstephenson;
 
-public class Tuple3<A,B,C> {
+import java.io.Serializable;
+
+public class Tuple3<A,B,C> implements Serializable{
+	private static final long serialVersionUID = 7053801908588383863L;
 	public final A _1;
 	public final B _2;
 	public final C _3;

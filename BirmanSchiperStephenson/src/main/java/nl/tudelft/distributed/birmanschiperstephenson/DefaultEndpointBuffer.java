@@ -1,15 +1,18 @@
 package nl.tudelft.distributed.birmanschiperstephenson;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DefaultEndpointBuffer implements IEndpointBuffer{
+public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpointBuffer{
+	
+	private static final long serialVersionUID = -7906377175640753915L;
 	private List<Tuple3<Object, Integer, int[]>> buffer;
 	private int[] vectorClock;
 	private IEndpoint endpoint;
 	
-	public DefaultEndpointBuffer(int n, IEndpoint endpoint) {
+	public DefaultEndpointBuffer(int n, IEndpoint endpoint) throws RemoteException {
 		buffer = new LinkedList<Tuple3<Object,Integer, int[]>>();
 		this.vectorClock = new int[n];
 		this.endpoint = endpoint;
