@@ -17,7 +17,7 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 	}
 	
 	@Override
-	public void receive(Object message, int sender, int[] vector) throws RemoteException {
+	public synchronized void receive(Object message, int sender, int[] vector) throws RemoteException {
 		if(passesCondition(sender, vector)){
             synchronized (buffer) {
                 buffer.add(Tuple3.create(message, sender, vector));
@@ -29,10 +29,9 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 					Tuple3<Object, Integer, int[]> entry = buffer.get(i);
 					if(passesCondition(entry._2, entry._3)){
 						endpoint.deliver(message);
-                        synchronized (endpoint) {
-                            endpoint.vectorClock()[sender]++;
-                            buffer.remove(i);
-                        }
+                        endpoint.vectorClock()[sender]++;
+                        buffer.remove(i);
+                        
                         foundAmount++;
                         //i--;
                     }
@@ -41,13 +40,12 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 		} else{
 			buffer.add(Tuple3.create(message, sender, vector));
 		}
+		System.out.println(buffer);
 	}
 	
 	private boolean passesCondition(int sender, int[] vector){
-		int[] localClock = endpoint.vectorClock().clone();
-		localClock[sender] += 1;
-		for(int i = 0 ; i < localClock.length && i < vector.length ; i++){
-			if(localClock[sender] < vector[i]){
+		for(int i = 0 ; i < endpoint.vectorClock().length && i < vector.length ; i++){
+			if(endpoint.vectorClock()[sender] + (i == sender ? 1 : 0) < vector[i]){
 				return false;
 			}
 		}

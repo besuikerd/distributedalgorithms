@@ -17,4 +17,9 @@ public class Tuple3<A,B,C> implements Serializable{
 	public static <A, B, C> Tuple3<A,B, C> create(A _1, B _2, C _3){
 		return new Tuple3<A,B,C>(_1, _2, _3);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("(%s, %s, %s)", _1, _2, _3);
+	}
 }
