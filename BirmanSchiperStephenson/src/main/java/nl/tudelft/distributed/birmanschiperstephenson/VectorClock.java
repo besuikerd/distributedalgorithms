@@ -1,6 +1,7 @@
 package nl.tudelft.distributed.birmanschiperstephenson;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class VectorClock implements Serializable{
 	private static final long serialVersionUID = -8960683549670043809L;
@@ -92,4 +93,9 @@ public class VectorClock implements Serializable{
 		}
 		return true;
 	}
+
+    @Override
+    public String toString() {
+        return Arrays.toString(vector);
+    }
 }

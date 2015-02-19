@@ -10,19 +10,17 @@ public abstract class AbstractEndpoint implements IEndpoint{
 	
 	protected int nodeId;
 	protected String[] remotes;
-	protected int[] vectorClock;
-	
-	
+    protected VectorClock vectorClock;
 	
 	public AbstractEndpoint(int nodeId, String[] remotes) {
 		this.nodeId = nodeId;
 		this.remotes = remotes;
-        this.vectorClock = new int[remotes.length];
-	}
+        this.vectorClock = new VectorClock(remotes.length);
+    }
 
 	@Override
 	public void broadcast(Object message) {
-        vectorClock[nodeId]++;
+        vectorClock.increment(nodeId);
         int i = 0;
         for(String remote : remotes){
             // Don't broadcast to self
@@ -42,7 +40,7 @@ public abstract class AbstractEndpoint implements IEndpoint{
 	}
 	
 	@Override
-	public int[] vectorClock() {
+    public VectorClock getClock() {
 		return vectorClock;
 	}
 	

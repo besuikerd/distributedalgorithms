@@ -5,7 +5,6 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -16,7 +15,7 @@ public class TrollEndpoint extends AbstractEndpoint {
     private int numberOfMessages;
     private Random random;
 
-    private ArrayList<Tuple3<Integer, Object, int[]>> broadcastList = new ArrayList<>();
+    private ArrayList<Tuple3<Integer, Object, VectorClock>> broadcastList = new ArrayList<>();
 
     public TrollEndpoint(int nodeId, int numberOfMessages, String[] remotes) {
         super(nodeId, remotes);
@@ -31,8 +30,8 @@ public class TrollEndpoint extends AbstractEndpoint {
 
     @Override
     public void broadcast(Object message) {
-        vectorClock[nodeId]++;
-        broadcastList.add(new Tuple3<Integer, Object, int[]>(nodeId, message, vectorClock.clone()));
+        vectorClock.increment(nodeId);
+        broadcastList.add(new Tuple3<Integer, Object, VectorClock>(nodeId, message, vectorClock.copy()));
         if (broadcastList.size() == numberOfMessages) {
             for (int i = 0; i < numberOfMessages; i++) {
                 broadcast();
@@ -43,9 +42,9 @@ public class TrollEndpoint extends AbstractEndpoint {
     public void broadcast() {
         int messageCount = broadcastList.size();
 
-        Tuple3<Integer, Object, int[]> message = broadcastList.remove(random.nextInt(messageCount));
+        Tuple3<Integer, Object, VectorClock> message = broadcastList.remove(random.nextInt(messageCount));
 
-        System.out.println("[" + message._1 + "] Sending " + message._2 + " as " + Arrays.toString(message._3));
+        System.out.println("[" + message._1 + "] Sending " + message._2 + " as " + message._3.toString());
         int i = 0;
         for (String remote : remotes) {
             // Don't broadcast to self

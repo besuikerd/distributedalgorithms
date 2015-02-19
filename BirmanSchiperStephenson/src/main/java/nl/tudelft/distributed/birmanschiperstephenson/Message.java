@@ -7,9 +7,9 @@ public class Message implements Serializable {
     private Object message;
     private int sender;
     private int receiver;
-    private int[] clock;
+    private VectorClock clock;
 
-    public Message(int sender, int receiver, int[] clock, Object message) {
+    public Message(int sender, int receiver, VectorClock clock, Object message) {
         this.sender = sender;
         this.receiver = receiver;
         this.clock = clock;
@@ -28,7 +28,7 @@ public class Message implements Serializable {
         return receiver;
     }
 
-    public int[] getClock() {
+    public VectorClock getClock() {
         return clock;
     }
 }
