@@ -50,6 +50,9 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
                 return false;
             }
 		}
-		return true;
+        /*if (ourVector[sender] != remoteVector[sender]) {
+            return false;
+        }*/
+        return true;
 	}
 }

@@ -40,7 +40,8 @@ public class InOrderEndpoint implements IEndpoint, Runnable{
 				}
 			}
 		}
-	}
+        delegate.deliver(message);
+    }
 
 	@Override
 	public void broadcast(Object message) {

@@ -35,11 +35,15 @@ public class Test {
                 Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
                 Thread endpointThread = new Thread(endpoint);
                 threads[i] = endpointThread;
-                endpointThread.start();
             } catch (RemoteException | AlreadyBoundException | MalformedURLException e) {
                 e.printStackTrace();
             }
         }
+
+        for (Thread endpointThread : threads) {
+            endpointThread.start();
+        }
+
         for (Thread endpointThread : threads) {
             try {
                 endpointThread.join();
