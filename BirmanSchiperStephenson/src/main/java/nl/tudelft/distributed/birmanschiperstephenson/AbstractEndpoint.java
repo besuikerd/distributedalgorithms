@@ -47,6 +47,6 @@ public abstract class AbstractEndpoint implements IEndpoint{
 	
 	@Override
 	public int getNodeId() {
-		return 0;
+        return nodeId;
 	}
 }

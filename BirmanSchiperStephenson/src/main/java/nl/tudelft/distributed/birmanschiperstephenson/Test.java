@@ -31,7 +31,7 @@ public class Test {
         Thread[] threads = new Thread[INSTANCES];
         for (int i = 0; i < INSTANCES; i++) {
             try {
-                RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, ROUNDS);
+                InOrderEndpoint endpoint = new InOrderEndpoint(new TrollEndpoint(i, ROUNDS, remotes), ROUNDS);
                 Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
                 Thread endpointThread = new Thread(endpoint);
                 threads[i] = endpointThread;
