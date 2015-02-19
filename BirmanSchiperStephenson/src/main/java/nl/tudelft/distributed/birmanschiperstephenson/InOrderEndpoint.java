@@ -18,23 +18,26 @@ public class InOrderEndpoint implements IEndpoint, Runnable {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void deliver(Message message) {
+    	delegate.deliver(message);
         synchronized (messages) {
             Tuple2<Integer, Integer> tuple = (Tuple2<Integer, Integer>) message.getMessage();
             if (messages.containsKey(tuple._1)) {
                 Integer current = messages.get(tuple._1);
                 Integer expected = current + 1;
                 if (tuple._2 != expected.intValue()) {
-                    System.err.println(String.format("[%d] message received in invalid order, expected: %d, got: %d", tuple._1, expected, tuple._2));
+                    System.err.println(String.format("[%d] message received in invalid order, expected: (%d,%d), got: %s", tuple._1, tuple._1, expected, tuple));
                 } else {
                     messages.put(tuple._1, tuple._2);
+                    //System.out.println(String.format("[%d] correct message!: %s", delegate.getNodeId(), tuple));
                 }
             } else if (tuple._2 == 0) {
                 messages.put(tuple._1, tuple._2);
+                //System.out.println(String.format("[%d] first message!: %s", delegate.getNodeId(), tuple));
             } else {
                 System.err.println(String.format("[%d] message received in invalid order, expected: %d, got: %d", tuple._1, 0, tuple._2));
             }
         }
-        delegate.deliver(message);
+        
     }
 
     @Override

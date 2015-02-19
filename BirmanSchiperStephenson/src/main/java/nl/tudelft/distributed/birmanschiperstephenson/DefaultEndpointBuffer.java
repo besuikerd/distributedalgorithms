@@ -18,6 +18,8 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 
     @Override
     public synchronized void receive(Message message) throws RemoteException {
+    	System.out.println(message);
+    	
         if (passesCondition(message)) {
             buffer.add(message);
             int foundAmount;

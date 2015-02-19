@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 public class Test {
-    private final static int INSTANCES = 3;
+    private final static int INSTANCES = 2;
     private static final int ROUNDS = 2;
 
     public static void main(String[] args) {
@@ -31,7 +31,9 @@ public class Test {
         for (int i = 0; i < INSTANCES; i++) {
             try {
                 InOrderEndpoint endpoint = new InOrderEndpoint(new TrollEndpoint(i, ROUNDS, remotes), ROUNDS);
-                Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
+                //RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, ROUNDS);
+            	
+            	Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
                 Thread endpointThread = new Thread(endpoint);
                 threads[i] = endpointThread;
             } catch (RemoteException | AlreadyBoundException | MalformedURLException e) {
