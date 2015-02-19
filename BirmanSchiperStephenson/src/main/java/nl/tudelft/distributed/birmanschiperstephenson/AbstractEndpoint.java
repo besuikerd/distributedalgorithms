@@ -44,4 +44,9 @@ public abstract class AbstractEndpoint implements IEndpoint{
 	public int[] vectorClock() {
 		return vectorClock;
 	}
+	
+	@Override
+	public int getNodeId() {
+		return 0;
+	}
 }
