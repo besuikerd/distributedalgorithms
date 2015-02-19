@@ -22,7 +22,7 @@ public class TrollEndpoint extends AbstractEndpoint {
 
     @Override
     public void deliver(Message message) {
-        System.out.println("[" + nodeId + "] " + message.getMessage().toString());
+        //System.out.println("[" + nodeId + "] " + message.getMessage().toString());
     }
 
     @Override

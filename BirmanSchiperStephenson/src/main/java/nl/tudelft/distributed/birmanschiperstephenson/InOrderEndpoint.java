@@ -19,7 +19,7 @@ public class InOrderEndpoint implements IEndpoint, Runnable {
     @Override
     public void deliver(Message message) {
         synchronized (messages) {
-            System.out.println("[" + getNodeId() + "] Got clock " + message.getClock() + ", need " + getClock() + "; " + messages.size());
+            //System.out.println("[" + getNodeId() + "] Got clock " + message.getClock() + ", need " + getClock() + "; " + messages.size());
             delegate.deliver(message);
             Tuple2<Integer, Integer> tuple = (Tuple2<Integer, Integer>) message.getMessage();
             if (messages.containsKey(tuple._1)) {
@@ -27,6 +27,7 @@ public class InOrderEndpoint implements IEndpoint, Runnable {
                 Integer expected = current + 1;
                 if (tuple._2 != expected.intValue()) {
                     System.err.println(String.format("1 [%d] message received in invalid order, expected: %d, got: %d", tuple._1, expected, tuple._2));
+                    System.exit(1);
                 } else {
                     messages.put(tuple._1, tuple._2);
                 }
@@ -34,6 +35,7 @@ public class InOrderEndpoint implements IEndpoint, Runnable {
                 messages.put(tuple._1, tuple._2);
             } else {
                 System.err.println(String.format("2 [%d] message received in invalid order, expected: %d, got: %d", tuple._1, 0, tuple._2));
+                System.exit(1);
             }
         }
     }

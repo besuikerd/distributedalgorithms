@@ -7,8 +7,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 public class Test {
-    private final static int INSTANCES = 2;
-    private static final int ROUNDS = 2;
+    private final static int INSTANCES = 50;
+    private static final int ROUNDS = 1000;
 
     public static void main(String[] args) {
 

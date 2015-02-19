@@ -27,10 +27,10 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
                 for (int i = 0; i < messageCount; i++) {
                     Message entry = buffer.get(i);
                     if (passesCondition(entry)) {
-                        endpoint.deliver(message);
-                        endpoint.getClock().increment(message.getSender());
+                        endpoint.deliver(entry);
+                        endpoint.getClock().increment(entry.getSender());
                         Object a = buffer.remove(i);
-                        System.out.println(endpoint.getNodeId() + " " + a.toString());
+                        //System.out.println(endpoint.getNodeId() + " " + a.toString());
                         messageCount--;
                         i--;
                         foundAmount++;
