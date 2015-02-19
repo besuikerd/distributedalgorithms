@@ -27,7 +27,7 @@ public class RandomDelaySenderEndpoint extends AbstractEndpoint implements Runna
                 Thread.sleep(random.nextInt(5000) + 100);
             } catch (InterruptedException e) {
             }
-            broadcast(nodeId + " " + messageNumber);
+            broadcast(String.format("%d => #%d", nodeId, messageNumber));
         }
     }
 

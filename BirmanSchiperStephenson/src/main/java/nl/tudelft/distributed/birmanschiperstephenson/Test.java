@@ -5,17 +5,20 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public class Test {
     private final static int INSTANCES = 2;
-
+    private static final int ROUNDS = 2;
     public static void main(String[] args) {
-        if (System.getSecurityManager() == null) {
+        Registry registry = null;
+    	
+    	if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
 
         try {
-            LocateRegistry.createRegistry(1337);
+            registry = LocateRegistry.createRegistry(1337);
         } catch (RemoteException e) {
             System.err.println("Could not create registry...: " + e);
         }
@@ -28,7 +31,7 @@ public class Test {
         Thread[] threads = new Thread[INSTANCES];
         for (int i = 0; i < INSTANCES; i++) {
             try {
-                RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, INSTANCES);
+                RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, ROUNDS);
                 Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
                 Thread endpointThread = new Thread(endpoint);
                 threads[i] = endpointThread;
@@ -45,5 +48,7 @@ public class Test {
             }
         }
         System.out.println("done");
+
+        System.exit(0);
     }
 }

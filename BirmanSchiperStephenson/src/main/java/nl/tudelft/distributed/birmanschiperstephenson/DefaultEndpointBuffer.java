@@ -40,7 +40,6 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 		} else{
 			buffer.add(Tuple3.create(message, sender, vector));
 		}
-		System.out.println(buffer);
 	}
 	
 	private boolean passesCondition(int sender, int[] vector){
