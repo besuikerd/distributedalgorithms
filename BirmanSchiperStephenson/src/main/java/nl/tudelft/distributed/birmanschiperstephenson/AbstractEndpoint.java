@@ -22,8 +22,13 @@ public abstract class AbstractEndpoint implements IEndpoint{
 
 	@Override
 	public void broadcast(Object message) {
-		for(String remote : remotes){
-			try {
+        int i = 0;
+        for(String remote : remotes){
+            // Don't broadcast to self
+            if (i == nodeId) {
+                continue;
+            }
+            try {
 				Object o = Naming.lookup(remote);
 				if(o instanceof IEndpointBuffer){
 					((IEndpointBuffer) o).receive(message, nodeId, vectorClock);
@@ -31,7 +36,8 @@ public abstract class AbstractEndpoint implements IEndpoint{
 			} catch (MalformedURLException | RemoteException | NotBoundException e) {
                 e.printStackTrace();
             }
-		}
+            i++;
+        }
 	}
 	
 	@Override

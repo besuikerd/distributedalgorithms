@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 public class Test {
-    private final static int INSTANCES = 10;
+    private final static int INSTANCES = 2;
 
     public static void main(String[] args) {
         if (System.getSecurityManager() == null) {
@@ -28,7 +28,7 @@ public class Test {
         Thread[] threads = new Thread[INSTANCES];
         for (int i = 0; i < INSTANCES; i++) {
             try {
-                RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, 10);
+                RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, INSTANCES);
                 Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
                 Thread endpointThread = new Thread(endpoint);
                 threads[i] = endpointThread;
