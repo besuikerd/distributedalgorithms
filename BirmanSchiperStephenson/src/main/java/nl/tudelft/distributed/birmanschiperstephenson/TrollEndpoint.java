@@ -43,16 +43,24 @@ public class TrollEndpoint extends AbstractEndpoint {
         Tuple3<Integer, Object, VectorClock> message = broadcastList.remove(random.nextInt(messageCount));
 
         //System.out.println("[" + message._1 + "] Sending " + message._2 + " as " + message._3.toString());
-        int i = 0;
-        for (String remote : remotes) {
+        //int i = 0;
+        for (int i = 0; i < remotes.length; i++) {
+            String remote = remotes[i];
             // Don't broadcast to self
-            if (i++ == nodeId) {
+            if (i == nodeId) {
                 continue;
             }
             try {
                 Object o = Naming.lookup(remote);
                 if (o instanceof IEndpointBuffer) {
+                    if (message._1 != nodeId) {
+                        System.err.println("WTF NOOB 1");
+                    }
+                    if (message._1 == i) {
+                        System.err.println("WTF NOOB 2");
+                    }
                     Message m = new Message(message._1, i, message._3, message._2);
+                    //System.out.println("[" + message._1 + "] Sending " + message._2 + " to " + (i-1));
                     ((IEndpointBuffer) o).receive(m);
                 }
             } catch (MalformedURLException | RemoteException | NotBoundException e) {

@@ -8,7 +8,7 @@ import java.util.List;
 public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpointBuffer {
 
     private static final long serialVersionUID = -7906377175640753915L;
-    private List<Message> buffer;
+    private final List<Message> buffer;
     private IEndpoint endpoint;
 
     public DefaultEndpointBuffer(IEndpoint endpoint) throws RemoteException {
@@ -18,25 +18,25 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 
     @Override
     public synchronized void receive(Message message) throws RemoteException {
-    	System.out.println(message);
-    	
+        buffer.add(message);
         if (passesCondition(message)) {
-            buffer.add(message);
             int foundAmount;
             do {
                 foundAmount = 0;
-                for (int i = 0; i < buffer.size(); i++) {
+                int messageCount = buffer.size();
+                for (int i = 0; i < messageCount; i++) {
                     Message entry = buffer.get(i);
                     if (passesCondition(entry)) {
                         endpoint.deliver(message);
                         endpoint.getClock().increment(message.getSender());
-                        buffer.remove(i);
+                        Object a = buffer.remove(i);
+                        System.out.println(endpoint.getNodeId() + " " + a.toString());
+                        messageCount--;
+                        i--;
                         foundAmount++;
                     }
                 }
             } while (foundAmount != 0);
-        } else {
-            buffer.add(message);
         }
     }
 
