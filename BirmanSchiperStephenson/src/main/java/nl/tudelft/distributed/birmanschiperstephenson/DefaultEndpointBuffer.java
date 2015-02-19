@@ -40,13 +40,6 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 
     private boolean passesCondition(Message message) {
         int sender = message.getSender();
-        VectorClock remoteClock = message.getClock();
-
-        remoteClock = remoteClock.immutableIncrement(sender);
-        if (endpoint.getClock().greaterThanOrEquals(remoteClock)) {
-            return true;
-        } else {
-            return false;
-        }
+        return endpoint.getClock().immutableIncrement(sender).greaterThanOrEquals(message.getClock());
     }
 }
