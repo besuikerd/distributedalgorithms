@@ -20,10 +20,10 @@ public class InOrderEndpoint implements IEndpoint, Runnable{
 	@Override
 	public void deliver(Object message) {
 		if(message instanceof Tuple2){
-			Tuple2<?, ?> unKnownTypeTyple = (Tuple2) message;
-			if(unKnownTypeTyple._1 instanceof Integer && unKnownTypeTyple._2 instanceof Integer){
-				Tuple2<Integer,Integer> tuple = (Tuple2<Integer, Integer>) unKnownTypeTyple;
-				synchronized(messages){
+            Tuple2<?, ?> unknownTypeTuple = (Tuple2) message;
+            if (unknownTypeTuple._1 instanceof Integer && unknownTypeTuple._2 instanceof Integer) {
+                Tuple2<Integer, Integer> tuple = (Tuple2<Integer, Integer>) unknownTypeTuple;
+                synchronized(messages){
 					if(messages.containsKey(tuple._1)){
 						Integer current = messages.get(tuple._1);
 						Integer expected = current + 1;
