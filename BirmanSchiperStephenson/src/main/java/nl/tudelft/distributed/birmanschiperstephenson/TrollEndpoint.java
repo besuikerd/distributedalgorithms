@@ -25,8 +25,8 @@ public class TrollEndpoint extends AbstractEndpoint {
     }
 
     @Override
-    public void deliver(Object message) {
-        System.out.println("[" + nodeId + "] " + message.toString());
+    public void deliver(Message message) {
+        System.out.println("[" + nodeId + "] " + message.getMessage().toString());
     }
 
     @Override
@@ -55,7 +55,8 @@ public class TrollEndpoint extends AbstractEndpoint {
             try {
                 Object o = Naming.lookup(remote);
                 if (o instanceof IEndpointBuffer) {
-                    ((IEndpointBuffer) o).receive(message._2, message._1, message._3);
+                    Message m = new Message(message._1, i, message._3, message._2);
+                    ((IEndpointBuffer) o).receive(m);
                 }
             } catch (MalformedURLException | RemoteException | NotBoundException e) {
                 e.printStackTrace();

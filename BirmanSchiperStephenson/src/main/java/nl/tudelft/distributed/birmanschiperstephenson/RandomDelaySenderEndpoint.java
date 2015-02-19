@@ -15,8 +15,8 @@ public class RandomDelaySenderEndpoint extends AbstractEndpoint implements Runna
     }
 
     @Override
-    public void deliver(Object message) {
-        System.out.println("[" + nodeId + "] " + message.toString());
+    public void deliver(Message message) {
+        System.out.println("[" + nodeId + "] " + message.getMessage().toString());
     }
 
     @Override

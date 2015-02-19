@@ -32,8 +32,9 @@ public abstract class AbstractEndpoint implements IEndpoint{
             try {
 				Object o = Naming.lookup(remote);
 				if(o instanceof IEndpointBuffer){
-					((IEndpointBuffer) o).receive(message, nodeId, vectorClock);
-				}
+                    Message m = new Message(nodeId, i, vectorClock, message);
+                    ((IEndpointBuffer) o).receive(m);
+                }
 			} catch (MalformedURLException | RemoteException | NotBoundException e) {
                 e.printStackTrace();
             }
