@@ -17,7 +17,7 @@ public abstract class AbstractEndpoint implements IEndpoint{
 	public AbstractEndpoint(int nodeId, String[] remotes) {
 		this.nodeId = nodeId;
 		this.remotes = remotes;
-		this.vectorClock = new int[remotes.length + 1];
+        this.vectorClock = new int[remotes.length];
 	}
 
 	@Override
