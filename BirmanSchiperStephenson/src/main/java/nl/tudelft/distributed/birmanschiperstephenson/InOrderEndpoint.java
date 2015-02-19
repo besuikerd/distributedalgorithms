@@ -27,9 +27,9 @@ public class InOrderEndpoint implements IEndpoint, Runnable{
 					if(messages.containsKey(tuple._1)){
 						Integer current = messages.get(tuple._1);
 						Integer expected = current + 1;
-						if(tuple._2 != expected) {
-							System.err.println(String.format("message received in invalid order, expected: %d, got: %d", expected, tuple._2));
-						} else{
+                        if (tuple._2 != expected.intValue()) {
+                            System.err.println(String.format("message received in invalid order, expected: %d, got: %d", expected, tuple._2));
+                        } else{
 							messages.put(tuple._1, tuple._2);
 						}
 					} else if(tuple._2 == 0){
