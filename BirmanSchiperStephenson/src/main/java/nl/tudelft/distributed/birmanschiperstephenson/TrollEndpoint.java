@@ -7,9 +7,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- * Created by Jasper on 2/19/2015.
- */
 public class TrollEndpoint extends AbstractEndpoint {
 
     private int numberOfMessages;
@@ -31,8 +28,9 @@ public class TrollEndpoint extends AbstractEndpoint {
     @Override
     public void broadcast(Object message) {
         vectorClock.increment(nodeId);
-        broadcastList.add(new Tuple3<Integer, Object, VectorClock>(nodeId, message, vectorClock.copy()));
+        broadcastList.add(new Tuple3<>(nodeId, message, vectorClock.copy()));
         if (broadcastList.size() == numberOfMessages) {
+            System.out.println("[" + nodeId + "] Got all messages; broadcasting in random order");
             for (int i = 0; i < numberOfMessages; i++) {
                 broadcast();
             }

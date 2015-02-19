@@ -3,21 +3,20 @@ package nl.tudelft.distributed.birmanschiperstephenson;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InOrderEndpoint implements IEndpoint, Runnable{
+public class InOrderEndpoint implements IEndpoint, Runnable {
 
-	private IEndpoint delegate;
-	private Map<Integer,Integer> messages;
-	private int numberOfMessages;
-	
-	public InOrderEndpoint(IEndpoint delegate, int numberOfMessages) {
-		this.delegate = delegate;
-		this.messages = new HashMap<Integer, Integer>();
-		this.numberOfMessages = numberOfMessages;
-		
-	}
+    private final Map<Integer, Integer> messages = new HashMap<>();
+    private IEndpoint delegate;
+    private int numberOfMessages;
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	@Override
+    public InOrderEndpoint(IEndpoint delegate, int numberOfMessages) {
+        this.delegate = delegate;
+        this.numberOfMessages = numberOfMessages;
+
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
     public void deliver(Message message) {
         synchronized (messages) {
             Tuple2<Integer, Integer> tuple = (Tuple2<Integer, Integer>) message.getMessage();
@@ -38,25 +37,25 @@ public class InOrderEndpoint implements IEndpoint, Runnable{
         delegate.deliver(message);
     }
 
-	@Override
-	public void broadcast(Object message) {
-		delegate.broadcast(message);
-	}
+    @Override
+    public void broadcast(Object message) {
+        delegate.broadcast(message);
+    }
 
-	@Override
+    @Override
     public VectorClock getClock() {
         return delegate.getClock();
     }
-	
-	@Override
-	public int getNodeId() {
-		return delegate.getNodeId();
-	}
 
-	@Override
-	public void run() {
-		for(int i = 0 ; i < numberOfMessages ; i++){
-			broadcast(Tuple2.create(delegate.getNodeId(), i));
-		}
-	}
+    @Override
+    public int getNodeId() {
+        return delegate.getNodeId();
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < numberOfMessages; i++) {
+            broadcast(Tuple2.create(delegate.getNodeId(), i));
+        }
+    }
 }
