@@ -8,7 +8,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class Test {
-    private final static int INSTANCES = 2;
+    private final static int INSTANCES = 3;
     private static final int ROUNDS = 2;
     public static void main(String[] args) {
         Registry registry = null;

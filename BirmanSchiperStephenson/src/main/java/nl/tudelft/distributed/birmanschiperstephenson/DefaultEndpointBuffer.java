@@ -41,12 +41,14 @@ public class DefaultEndpointBuffer extends UnicastRemoteObject implements IEndpo
 			buffer.add(Tuple3.create(message, sender, vector));
 		}
 	}
-	
-	private boolean passesCondition(int sender, int[] vector){
-		for(int i = 0 ; i < endpoint.vectorClock().length && i < vector.length ; i++){
-			if(endpoint.vectorClock()[sender] + (i == sender ? 1 : 0) < vector[i]){
-				return false;
-			}
+
+    private boolean passesCondition(int sender, int[] remoteVector) {
+        int[] ourVector = endpoint.vectorClock().clone();
+        ourVector[sender]++;
+        for (int i = 0; i < ourVector.length && i < remoteVector.length; i++) {
+            if (ourVector[i] < remoteVector[i]) {
+                return false;
+            }
 		}
 		return true;
 	}

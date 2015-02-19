@@ -22,10 +22,11 @@ public abstract class AbstractEndpoint implements IEndpoint{
 
 	@Override
 	public void broadcast(Object message) {
+        vectorClock[nodeId]++;
         int i = 0;
         for(String remote : remotes){
             // Don't broadcast to self
-            if (i == nodeId) {
+            if (i++ == nodeId) {
                 continue;
             }
             try {
@@ -36,7 +37,6 @@ public abstract class AbstractEndpoint implements IEndpoint{
 			} catch (MalformedURLException | RemoteException | NotBoundException e) {
                 e.printStackTrace();
             }
-            i++;
         }
 	}
 	
