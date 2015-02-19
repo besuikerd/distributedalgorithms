@@ -18,23 +18,28 @@ public class InOrderEndpoint implements IEndpoint, Runnable{
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
-    public void deliver(Message message) {
-        synchronized (messages) {
-            Tuple2<Integer, Integer> tuple = (Tuple2<Integer, Integer>) message.getMessage();
-            if (messages.containsKey(tuple._1)) {
-                Integer current = messages.get(tuple._1);
-                Integer expected = current + 1;
-                if (tuple._2 != expected.intValue()) {
-                    System.err.println(String.format("message received in invalid order, expected: %d, got: %d", expected, tuple._2));
-                } else {
-                    messages.put(tuple._1, tuple._2);
-                }
-            } else if (tuple._2 == 0) {
-                messages.put(tuple._1, tuple._2);
-            } else {
-                System.err.println(String.format("message received in invalid order, expected: %d, got: %d", 0, tuple._2));
-            }
-        }
+	public void deliver(Object message) {
+		if(message instanceof Tuple2){
+            Tuple2<?, ?> unknownTypeTuple = (Tuple2) message;
+            if (unknownTypeTuple._1 instanceof Integer && unknownTypeTuple._2 instanceof Integer) {
+                Tuple2<Integer, Integer> tuple = (Tuple2<Integer, Integer>) unknownTypeTuple;
+                synchronized(messages){
+					if(messages.containsKey(tuple._1)){
+						Integer current = messages.get(tuple._1);
+						Integer expected = current + 1;
+                        if (tuple._2 != expected.intValue()) {
+                            System.err.println(String.format("[%d] message received in invalid order, expected: %d, got: %d", tuple._1, expected, tuple._2));
+                        } else{
+							messages.put(tuple._1, tuple._2);
+						}
+					} else if(tuple._2 == 0){
+							messages.put(tuple._1, tuple._2);
+					} else{
+						System.err.println(String.format("[%d] message received in invalid order, expected: %d, got: %d", tuple._1, 0, tuple._2));
+					}
+				}
+			}
+		}
         delegate.deliver(message);
     }
 
