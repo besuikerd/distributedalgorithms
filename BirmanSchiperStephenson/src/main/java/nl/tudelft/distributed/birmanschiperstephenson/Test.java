@@ -8,7 +8,7 @@ import java.rmi.registry.LocateRegistry;
 
 public class Test {
     private final static int INSTANCES = 50;
-    private static final int ROUNDS = 1000;
+    private static final int ROUNDS = 100;
 
     public static void main(String[] args) {
 
