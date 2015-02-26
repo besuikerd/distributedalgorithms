@@ -8,8 +8,8 @@ import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 
 public class Test {
-    public static final int INSTANCES = 10;
-    public static final int ROUNDS = 10;
+  public static final int INSTANCES = 1;
+  public static final int ROUNDS = 1;
 
     public static void main(String[] args) {
 
@@ -27,7 +27,7 @@ public class Test {
         }
 
         try {
-            LocateRegistry.createRegistry(1337);
+          LocateRegistry.createRegistry(40001);
         } catch (RemoteException e) {
             System.err.println("Could not create registry...: " + e);
           System.exit(1);
@@ -48,11 +48,11 @@ public class Test {
       }
 
       for (int i = ownStart; i < ownEnd; i++) {
-            remotes[i] = "rmi://" + ownIp + ":1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
+        remotes[i] = "rmi://" + ownIp + ":40001/" + DefaultEndpointBuffer.class.getName() + "_" + i;
         }
 
       for (int i = otherStart; i < otherEnd; i++) {
-          remotes[i] = String.format("rmi://%s:1337/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
+        remotes[i] = String.format("rmi://%s:40001/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
         }
 
         Thread[] threads = new Thread[INSTANCES];
@@ -85,6 +85,6 @@ public class Test {
         }
         System.out.println("done");
 
-        System.exit(0);
+//        System.exit(0);
     }
 }
