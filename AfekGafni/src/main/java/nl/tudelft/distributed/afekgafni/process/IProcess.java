@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 abstract public class IProcess extends UnicastRemoteObject implements Remote {
+	private static final long serialVersionUID = 1L;
 	protected int nodeId;
 
 	protected IProcess(int nodeId) throws RemoteException {

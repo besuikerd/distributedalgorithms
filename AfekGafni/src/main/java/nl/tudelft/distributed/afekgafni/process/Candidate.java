@@ -16,14 +16,6 @@ public class Candidate extends IProcess {
 		this.remotes = remotes;
 	}
 
-	public void sendWhatever() {
-		Iterate over ordinary
-		bool ack = roep receive func aan
-		if (!ack)
-			kill self
-	}
-
-
 	public void send(int nodeId, IMessage message) {
 		Object o = null;
 		try {
