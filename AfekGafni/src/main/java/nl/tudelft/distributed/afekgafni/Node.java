@@ -1,5 +1,7 @@
 package nl.tudelft.distributed.afekgafni;
 
+import nl.tudelft.distributed.afekgafni.message.*;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -15,16 +17,16 @@ public class Node extends UnicastRemoteObject implements Remote {
     this.nodeId = nodeId;
   }
 
-  public void receive(Message message) {
+  public void receive(IMessage message) {
     System.out.println(String.format("[%d] Received: %s", nodeId, message.toString()));
   }
 
-  public void send(int nodeId, Message message) {
+  public void send(int nodeId, IMessage message) {
     Object o = null;
     try {
       o = Naming.lookup(getRemote(nodeId));
       if (o instanceof Node) {
-        Message m = new Message();
+        IMessage m = new Ack();
         Node that = (Node)o;
         that.receive(m);
       }
