@@ -6,12 +6,14 @@ import java.util.Map;
 public class InOrderEndpoint implements IEndpoint, Runnable {
 
     private final Map<Integer, Integer> messages = new HashMap<>();
-    private IEndpoint delegate;
+  private final int numberOfProcesses;
+  private IEndpoint delegate;
     private int numberOfMessages;
 
-    public InOrderEndpoint(IEndpoint delegate, int numberOfMessages) {
+  public InOrderEndpoint(IEndpoint delegate, int numberOfMessages, int numberOfProcesses) {
         this.delegate = delegate;
         this.numberOfMessages = numberOfMessages;
+    this.numberOfProcesses = numberOfProcesses;
 
     }
 
@@ -47,10 +49,9 @@ public class InOrderEndpoint implements IEndpoint, Runnable {
     }
     
     private void checkAllMessagesReceived(){
-      System.out.println(messages);
-      for(int i = 0 ; i < Test.INSTANCES ; i++){
-    		if(i != delegate.getNodeId() && (!messages.containsKey(i) || !messages.get(i).equals(Test.ROUNDS - 1))){
-    			return;
+      for (int i = 0; i < numberOfProcesses; i++) {
+        if (i != delegate.getNodeId() && (!messages.containsKey(i) || !messages.get(i).equals(numberOfMessages - 1))) {
+          return;
     		}
     	}
     	System.out.println(String.format("[%d] Received all broadcasts: %s", delegate.getNodeId(), messages));

@@ -22,7 +22,7 @@ public class TrollEndpoint extends AbstractEndpoint {
 
     @Override
     public void deliver(Message message) {
-      System.out.println("[" + nodeId + "] Received " + message.getMessage().toString());
+      //System.out.println("[" + nodeId + "] Received " + message.getMessage().toString());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class TrollEndpoint extends AbstractEndpoint {
         vectorClock.increment(nodeId);
         broadcastList.add(new Tuple3<>(nodeId, message, vectorClock.copy()));
         if (broadcastList.size() == numberOfMessages) {
-          System.out.println("[" + nodeId + "] Got all messages; broadcasting in random order");
+          //System.out.println("[" + nodeId + "] Got all messages; broadcasting in random order");
             for (int i = 0; i < numberOfMessages; i++) {
                 broadcast();
             }
@@ -42,7 +42,7 @@ public class TrollEndpoint extends AbstractEndpoint {
 
         Tuple3<Integer, Object, VectorClock> message = broadcastList.remove(random.nextInt(messageCount));
 
-      System.out.println("[" + message._1 + "] Sending " + message._2 + " as " + message._3.toString());
+      //System.out.println("[" + message._1 + "] Sending " + message._2 + " as " + message._3.toString());
         //int i = 0;
         for (int i = 0; i < remotes.length; i++) {
             String remote = remotes[i];
@@ -61,7 +61,7 @@ public class TrollEndpoint extends AbstractEndpoint {
                         System.err.println("WTF NOOB 2");
                     }
                     Message m = new Message(message._1, i, message._3, message._2);
-                    //System.out.println("[" + message._1 + "] Sending " + message._2 + " to " + (i-1));
+                  System.out.println("[" + message._1 + "] Sending " + message._2 + " to " + i);
                     ((IEndpointBuffer) o).receive(m);
                 } else {
                   System.err.println("Did not get endpoint");
