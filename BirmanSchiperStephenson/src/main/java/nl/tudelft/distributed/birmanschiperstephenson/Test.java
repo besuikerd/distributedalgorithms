@@ -34,40 +34,43 @@ public class Test {
         }
 
         String[] remotes = new String[INSTANCES * 2];
-      if ("slave".equals(mode)) {
-        for (int i = INSTANCES; i < remotes.length; i++) {
-          remotes[i] = "rmi://" + ownIp + ":1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
-        }
 
-        for (int i = 0; i < INSTANCES; i++) {
-          remotes[i] = String.format("rmi://%s:1337/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
-        }
-      } else {
-        for (int i = 0; i < INSTANCES; i++) {
+      int ownStart = 0;
+      int ownEnd = INSTANCES;
+      int otherStart = INSTANCES;
+      int otherEnd = remotes.length;
+
+      if ("slave".equals(mode)) {
+        ownStart = INSTANCES;
+        ownEnd = remotes.length;
+        otherStart = 0;
+        otherEnd = INSTANCES;
+      }
+
+      for (int i = ownStart; i < ownEnd; i++) {
             remotes[i] = "rmi://" + ownIp + ":1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
         }
 
-        for (int i = INSTANCES; i < remotes.length; i++) {
+      for (int i = otherStart; i < otherEnd; i++) {
           remotes[i] = String.format("rmi://%s:1337/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
-        }
         }
 
         Thread[] threads = new Thread[INSTANCES];
-        for (int i = 0; i < INSTANCES; i++) {
+      for (int i = ownStart; i < ownEnd; i++) {
             try {
                 InOrderEndpoint endpoint = new InOrderEndpoint(new TrollEndpoint(i, ROUNDS, remotes), ROUNDS);
                 //RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, ROUNDS);
 
               Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
                 Thread endpointThread = new Thread(endpoint);
-                threads[i] = endpointThread;
+              threads[i - ownStart] = endpointThread;
             } catch (RemoteException | AlreadyBoundException | MalformedURLException e) {
                 e.printStackTrace();
             }
         }
         
         new Scanner(System.in).nextLine();
-        
+      System.out.println("Starting");
 
         for (Thread endpointThread : threads) {
             endpointThread.start();
