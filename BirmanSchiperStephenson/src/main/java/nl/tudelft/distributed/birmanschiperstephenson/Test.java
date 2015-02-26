@@ -13,15 +13,16 @@ public class Test {
 
     public static void main(String[] args) {
 
-    	if(args.length != 2){
-    		System.err.println("usage: [own_ip|remote_ip]");
-    		return;
+      if (args.length != 3) {
+        System.err.println("usage: [own_ip|remote_ip|mode]");
+        return;
     	}
     	
     	String ownIp = args[0];
     	String otherIp = args[1];
-    	
-        if (System.getSecurityManager() == null) {
+      String mode = args[2];
+
+      if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
 
@@ -29,15 +30,26 @@ public class Test {
             LocateRegistry.createRegistry(1337);
         } catch (RemoteException e) {
             System.err.println("Could not create registry...: " + e);
+          System.exit(1);
         }
 
         String[] remotes = new String[INSTANCES * 2];
+      if ("slave".equals(mode)) {
+        for (int i = INSTANCES; i < remotes.length; i++) {
+          remotes[i] = "rmi://" + ownIp + ":1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
+        }
+
+        for (int i = 0; i < INSTANCES; i++) {
+          remotes[i] = String.format("rmi://%s:1337/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
+        }
+      } else {
         for (int i = 0; i < INSTANCES; i++) {
             remotes[i] = "rmi://" + ownIp + ":1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
         }
-        
-        for(int i = INSTANCES; i < remotes.length ; i++){
-        	remotes[i] = String.format("rmi://%s:1337/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
+
+        for (int i = INSTANCES; i < remotes.length; i++) {
+          remotes[i] = String.format("rmi://%s:1337/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
+        }
         }
 
         Thread[] threads = new Thread[INSTANCES];
@@ -45,8 +57,8 @@ public class Test {
             try {
                 InOrderEndpoint endpoint = new InOrderEndpoint(new TrollEndpoint(i, ROUNDS, remotes), ROUNDS);
                 //RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, ROUNDS);
-            	
-            	Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
+
+              Naming.bind(remotes[i], new DefaultEndpointBuffer(endpoint));
                 Thread endpointThread = new Thread(endpoint);
                 threads[i] = endpointThread;
             } catch (RemoteException | AlreadyBoundException | MalformedURLException e) {
