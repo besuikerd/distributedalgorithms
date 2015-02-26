@@ -6,28 +6,28 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 public class App {
-  private final static int INSTANCES = 50;
-  private static final int ROUNDS = 100;
+	private final static int INSTANCES = 50;
+	private static final int ROUNDS = 100;
 
-  public static void main(String[] args) {
+	public static void main(String[] args) {
 
-    if (System.getSecurityManager() == null) {
-      System.setSecurityManager(new SecurityManager());
-    }
+		if (System.getSecurityManager() == null) {
+			System.setSecurityManager(new SecurityManager());
+		}
 
-    try {
-      LocateRegistry.createRegistry(1337);
-    } catch (RemoteException e) {
-      System.err.println("Could not create registry...: " + e);
-    }
+		try {
+			LocateRegistry.createRegistry(1337);
+		} catch (RemoteException e) {
+			System.err.println("Could not create registry...: " + e);
+		}
 
-    String[] remotes = new String[INSTANCES];
-    for (int i = 0; i < INSTANCES; i++) {
-      remotes[i] = IProcess.getRemote(i);
-    }
+		String[] remotes = new String[INSTANCES];
+		for (int i = 0; i < INSTANCES; i++) {
+			remotes[i] = IProcess.getRemote(i);
+		}
 
     /*Thread[] threads = new Thread[INSTANCES];
-    for (int i = 0; i < INSTANCES; i++) {
+	for (int i = 0; i < INSTANCES; i++) {
       try {
         InOrderEndpoint endpoint = new InOrderEndpoint(new TrollEndpoint(i, ROUNDS, remotes), ROUNDS);
         //RandomDelaySenderEndpoint endpoint = new RandomDelaySenderEndpoint(i, remotes, ROUNDS);
@@ -54,5 +54,5 @@ public class App {
     System.out.println("done");
 
     System.exit(0);*/
-  }
+	}
 }
