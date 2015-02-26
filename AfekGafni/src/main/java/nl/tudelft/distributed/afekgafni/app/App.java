@@ -1,10 +1,7 @@
 package nl.tudelft.distributed.afekgafni.app;
 
-import nl.tudelft.distributed.afekgafni.Node;
+import nl.tudelft.distributed.afekgafni.process.IProcess;
 
-import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
@@ -26,7 +23,7 @@ public class App {
 
     String[] remotes = new String[INSTANCES];
     for (int i = 0; i < INSTANCES; i++) {
-      remotes[i] = Node.getRemote(i);
+      remotes[i] = IProcess.getRemote(i);
     }
 
     /*Thread[] threads = new Thread[INSTANCES];
