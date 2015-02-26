@@ -37,12 +37,26 @@ public class InOrderEndpoint implements IEndpoint, Runnable {
                 System.err.println(String.format("2 [%d] message received in invalid order, expected: %d, got: %d", tuple._1, 0, tuple._2));
                 System.exit(1);
             }
+            
+            
+            checkAllMessagesReceived();
+            
+            
         }
     }
 
     @Override
     public void broadcast(Object message) {
         delegate.broadcast(message);
+    }
+    
+    private void checkAllMessagesReceived(){
+    	for(int i = 0 ; i < Test.INSTANCES ; i++){
+    		if(i != delegate.getNodeId() && (!messages.containsKey(i) || !messages.get(i).equals(Test.ROUNDS - 1))){
+    			return;
+    		}
+    	}
+    	System.out.println(String.format("[%d] Received all broadcasts: %s", delegate.getNodeId(), messages));
     }
 
     @Override

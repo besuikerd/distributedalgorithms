@@ -5,13 +5,22 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Scanner;
 
 public class Test {
-    private final static int INSTANCES = 50;
-    private static final int ROUNDS = 100;
+    public static final int INSTANCES = 10;
+    public static final int ROUNDS = 10;
 
     public static void main(String[] args) {
 
+    	if(args.length != 2){
+    		System.err.println("usage: [own_ip|remote_ip]");
+    		return;
+    	}
+    	
+    	String ownIp = args[0];
+    	String otherIp = args[1];
+    	
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
@@ -22,9 +31,13 @@ public class Test {
             System.err.println("Could not create registry...: " + e);
         }
 
-        String[] remotes = new String[INSTANCES];
+        String[] remotes = new String[INSTANCES * 2];
         for (int i = 0; i < INSTANCES; i++) {
-            remotes[i] = "rmi://localhost:1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
+            remotes[i] = "rmi://" + ownIp + ":1337/" + DefaultEndpointBuffer.class.getName() + "_" + i;
+        }
+        
+        for(int i = INSTANCES; i < remotes.length ; i++){
+        	remotes[i] = String.format("rmi://%s:1337/%s", otherIp, DefaultEndpointBuffer.class.getName() + "_" + i);
         }
 
         Thread[] threads = new Thread[INSTANCES];
@@ -40,6 +53,9 @@ public class Test {
                 e.printStackTrace();
             }
         }
+        
+        new Scanner(System.in).nextLine();
+        
 
         for (Thread endpointThread : threads) {
             endpointThread.start();
