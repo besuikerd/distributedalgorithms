@@ -73,7 +73,6 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						candidateMessages.notify();
 					}
 				}
-				level++;
 				synchronized(candidateMessages){
 					log("Checking messages");
 					if(!candidateMessages.isEmpty()){
@@ -81,7 +80,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						CandidateMessage maxMsg = candidateMessages.stream().max((a, b) -> a.toString().compareTo(b.toString())).get();
 						log("Picked "+ maxMsg);
 						log("Comparing "+ maxMsg.level +" > "+ level +" && "+ maxMsg.nodeId +" > "+ nodeId);
-						if(maxMsg.level > level && maxMsg.nodeId > nodeId){
+						if(maxMsg.level > level || (maxMsg.level == level && maxMsg.nodeId > nodeId)) {
 							log("Yes, this is a new high");
 							this.level = maxMsg.level;
 							Ordinary.this.nodeId = maxMsg.nodeId;
@@ -97,6 +96,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						e.printStackTrace();
 					}
 				}
+				level++;
 			}
 		}
 	}
