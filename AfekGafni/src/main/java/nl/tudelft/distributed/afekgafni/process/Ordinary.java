@@ -52,6 +52,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 	private class OrdinaryProcess implements Runnable {
 		String link = null;
 		int level = -1;
+		int id = -1;
 
 		@Override
 		public void run() {
@@ -70,26 +71,27 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						} catch (RemoteException e) {
 							e.printStackTrace();
 						}
-					}
-					candidateMessages.notify();
-					try { //wait for more messages being sent
-						candidateMessages.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						candidateMessages.notify();
+						try { //wait for more messages being sent
+							candidateMessages.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 
 					if (!candidateMessages.isEmpty()) {
 						log("Found at least one message");
 						CandidateMessage maxMsg = candidateMessages.stream().max((a, b) -> a.level > b.level ? 1 : a.level == b.level ? a.nodeId > b.nodeId ? 1 : -1 : -1).get();
 						log("Picked " + maxMsg);
-						log("Comparing " + maxMsg.level + " > " + level + " && " + maxMsg.nodeId + " > " + nodeId);
-						if (maxMsg.level > level || (maxMsg.level == level && maxMsg.nodeId > nodeId)) {
+						log("Comparing " + maxMsg.level + " > " + level + " && " + maxMsg.nodeId + " > " + id);
+						if (maxMsg.level > level || (maxMsg.level == level && maxMsg.nodeId > id)) {
 							log("Yes, this is a new high");
 							this.level = maxMsg.level;
-							Ordinary.this.nodeId = maxMsg.nodeId;
+							this.id = maxMsg.nodeId;
 							this.link = maxMsg.link;
 						} else {
 							log("Nope, candidate message failed. Resetting link");
+							candidateMessages.notify();
 							link = null;
 						}
 					}

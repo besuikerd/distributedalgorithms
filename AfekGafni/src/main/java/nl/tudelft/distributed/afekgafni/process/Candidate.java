@@ -47,8 +47,9 @@ public class Candidate extends AbstractProcess<AckMessage> {
 				for (int i = subsetSize; i > 0; i--) {
 					String first = remotesCopy.pop();
 					try {
-						log("Trying to lookup " + Ordinary.getRemote(Integer.parseInt(first)));
-						Object o = Naming.lookup(Ordinary.getRemote(Integer.parseInt(first)));
+						String rmiString = Ordinary.getRemote(Integer.parseInt(first));
+						log("Trying to lookup " + rmiString);
+						Object o = Naming.lookup(rmiString);
 						IProcess<CandidateMessage> that = (IProcess<CandidateMessage>) o;
 						that.receive(new CandidateMessage(level, nodeId, getRemote(nodeId)));
 						log("Executed receive function");
