@@ -1,6 +1,6 @@
 package nl.tudelft.distributed.afekgafni.app;
 
-import nl.tudelft.distributed.afekgafni.process.IProcess;
+import nl.tudelft.distributed.afekgafni.process.AbstractProcess;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -23,7 +23,7 @@ public class App {
 
 		String[] remotes = new String[INSTANCES];
 		for (int i = 0; i < INSTANCES; i++) {
-			remotes[i] = IProcess.getRemote(i);
+			remotes[i] = AbstractProcess.getRemote(i);
 		}
 
     /*Thread[] threads = new Thread[INSTANCES];
