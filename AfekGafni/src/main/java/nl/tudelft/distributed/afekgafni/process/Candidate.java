@@ -42,7 +42,6 @@ public class Candidate extends AbstractProcess<AckMessage> {
 					return;
 				}
 				subsetSize = (int) Math.min(Math.pow(2, level / 2), remotesCopy.size());
-
 				for (int i = subsetSize; i > 0; i--) {
 					String first = remotesCopy.pop();
 					try {

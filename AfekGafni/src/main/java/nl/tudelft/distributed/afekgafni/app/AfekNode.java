@@ -9,12 +9,12 @@ import nl.tudelft.distributed.afekgafni.process.Candidate;
 import nl.tudelft.distributed.afekgafni.process.Ordinary;
 
 public class AfekNode {
-	public static final String USAGE = "id isCandidate otherNodes*";
+	public static final String USAGE = "usage: id isCandidate otherNodes*";
 	public static final int RMI_PORT = 1337;
 	
 	
 	public static void main(String[] args) {
-		if(args.length < 3){
+		if(args.length >= 2){
 			try{
 				int nodeId = Integer.parseInt(args[0]);
 				boolean isCandidate = args[1].toLowerCase().equals("candidate");
@@ -39,6 +39,7 @@ public class AfekNode {
 			
 			if(isCandidate){
 				Candidate candidate = new Candidate(nodeId, otherNodes);
+				candidate.startElection();
 			}
 		} catch(RemoteException | MalformedURLException | AlreadyBoundException e){
 			e.printStackTrace();
