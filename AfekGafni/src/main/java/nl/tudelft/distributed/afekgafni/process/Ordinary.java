@@ -58,16 +58,22 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 			while(true){
 				synchronized(candidateMessages) {
 					if(link != null){
-						Candidate candidate = null;
+						IProcess<AckMessage> process = null;
 						try {
-							candidate = (Candidate) Naming.lookup(link);
+							process = (IProcess<AckMessage>) Naming.lookup(link);
 						} catch (MalformedURLException | RemoteException| NotBoundException e) {
 							e.printStackTrace();
 							return;
 						}
 						try {
-							candidate.receive(new AckMessage());
+							process.receive(new AckMessage());
 						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
+						candidateMessages.notify();
+						try { //wait for more messages being sent
+							candidateMessages.wait();
+						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
@@ -86,14 +92,10 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 							link = null;
 						}
 					}
-					candidateMessages.notify();
-					try { //wait for more messages being sent
-						candidateMessages.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					
 				}
 				level++;
+				candidateMessages.clear();
 			}
 		}
 	}
