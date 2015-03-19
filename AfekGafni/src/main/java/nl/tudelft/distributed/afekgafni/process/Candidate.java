@@ -73,6 +73,10 @@ public class Candidate extends AbstractProcess<AckMessage> {
 			acknowledgements.add(msg);
 		}
 	}
+	
+	public static String getRemote(int nodeId) {
+		return getRemote(Candidate.class.getName(), nodeId);
+	}
 
 	/**
 	 * Called when elected

@@ -13,11 +13,7 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
 		this.nodeId = nodeId;
 	}
 
-	public static String getRemote(int nodeId) {
-		return "rmi://localhost:1337/" + IProcess.class.getName() + "_" + nodeId;
-	}
-	
-	public String getRemote() {
-		return getRemote(nodeId);
+	public static String getRemote(String name, int nodeId) {
+		return "rmi://localhost:1337/" + name + "_" + nodeId;
 	}
 }

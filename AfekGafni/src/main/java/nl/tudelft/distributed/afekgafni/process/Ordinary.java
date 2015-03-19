@@ -41,6 +41,10 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 		}
 	}
 	
+	public static String getRemote(int nodeId) {
+		return getRemote(Ordinary.class.getName(), nodeId);
+	}
+	
 	private class OrdinaryProcess implements Runnable{
 		String link = null;
 		int level = -1;

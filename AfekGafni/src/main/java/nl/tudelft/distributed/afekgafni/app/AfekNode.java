@@ -32,10 +32,10 @@ public class AfekNode {
 	public static void start(int nodeId, boolean isCandidate, String[] otherNodes) {
 		try {
 			Ordinary ordinary = new Ordinary(nodeId);
-			Naming.rebind(ordinary.getRemote(), ordinary);
-
+			Naming.rebind(Ordinary.getRemote(nodeId), ordinary);
 			if (isCandidate) {
 				Candidate candidate = new Candidate(nodeId, otherNodes);
+				Naming.rebind(Candidate.getRemote(nodeId), candidate);
 				candidate.startElection();
 			}
 		} catch (RemoteException | MalformedURLException e) {
