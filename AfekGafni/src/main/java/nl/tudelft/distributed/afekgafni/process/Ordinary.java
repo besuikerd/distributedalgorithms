@@ -22,7 +22,10 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 	private boolean initialized = false;
 	
 	@Override
-	public void receive(CandidateMessage msg) {
+	public void receive(CandidateMessage msg) throws RemoteException{
+		
+		System.out.println("received: " + msg);
+		
 		if(!initialized){
 			this.candidateMessages = new ArrayList<CandidateMessage>();
 			candidateMessages.add(msg);
@@ -60,7 +63,11 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						e.printStackTrace();
 						return;
 					}
-					candidate.receive(new AckMessage());
+					try {
+						candidate.receive(new AckMessage());
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 					synchronized(candidateMessages){
 						candidateMessages.notify();
 					}

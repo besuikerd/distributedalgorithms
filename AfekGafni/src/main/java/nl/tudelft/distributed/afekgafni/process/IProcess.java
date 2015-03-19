@@ -1,5 +1,9 @@
 package nl.tudelft.distributed.afekgafni.process;
 
-public interface IProcess<A> {
-	public void receive(A msg);
+import java.io.Serializable;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface IProcess<A> extends Remote, Serializable{
+	public void receive(A msg) throws RemoteException;
 }

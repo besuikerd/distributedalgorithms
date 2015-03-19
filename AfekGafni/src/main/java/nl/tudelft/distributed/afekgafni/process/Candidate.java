@@ -46,12 +46,17 @@ public class Candidate extends AbstractProcess<AckMessage> {
 					String first = remotesCopy.pop();
 					try {
 						System.out.println("Trying to lookup "+ Ordinary.getRemote(Integer.parseInt(first)));
+						
+						
 						Object o = Naming.lookup(Ordinary.getRemote(Integer.parseInt(first)));
-						// should be true...
-						if (o instanceof Ordinary) {
-							Ordinary that = (Ordinary) o;
-							that.receive(new CandidateMessage(level, nodeId, getRemote(nodeId)));
+						
+						for(Class<?> cls : o.getClass().getInterfaces()){
+							System.out.println("implements: " + cls.getName());
 						}
+						
+						// should be true...				
+						IProcess<CandidateMessage> that = (IProcess<CandidateMessage>) o;
+						that.receive(new CandidateMessage(level, nodeId, getRemote(nodeId)));
 					} catch (NotBoundException | MalformedURLException | RemoteException e) {
 						e.printStackTrace();
 						return;
@@ -69,7 +74,7 @@ public class Candidate extends AbstractProcess<AckMessage> {
 	}
 	
 	@Override
-	public void receive(AckMessage msg) {
+	public void receive(AckMessage msg) throws RemoteException{
 		synchronized(acknowledgements){
 			acknowledgements.add(msg);
 		}

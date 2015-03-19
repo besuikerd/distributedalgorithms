@@ -1,10 +1,9 @@
 package nl.tudelft.distributed.afekgafni.process;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-abstract public class AbstractProcess<A> extends UnicastRemoteObject implements Remote, IProcess<A> {
+abstract public class AbstractProcess<A> extends UnicastRemoteObject implements IProcess<A>{
 	private static final long serialVersionUID = 1L;
 	protected int nodeId;
 
