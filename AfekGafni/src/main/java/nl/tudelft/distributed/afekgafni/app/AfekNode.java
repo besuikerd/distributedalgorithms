@@ -4,7 +4,6 @@ import nl.tudelft.distributed.afekgafni.process.Candidate;
 import nl.tudelft.distributed.afekgafni.process.Ordinary;
 
 import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 
@@ -33,13 +32,13 @@ public class AfekNode {
 	public static void start(int nodeId, boolean isCandidate, String[] otherNodes) {
 		try {
 			Ordinary ordinary = new Ordinary(nodeId);
-			Naming.bind(ordinary.getRemote(), ordinary);
+			Naming.rebind(ordinary.getRemote(), ordinary);
 
 			if (isCandidate) {
 				Candidate candidate = new Candidate(nodeId, otherNodes);
 				candidate.startElection();
 			}
-		} catch (RemoteException | MalformedURLException | AlreadyBoundException e) {
+		} catch (RemoteException | MalformedURLException e) {
 			e.printStackTrace();
 		}
 	}
