@@ -45,7 +45,8 @@ public class Candidate extends AbstractProcess<AckMessage> {
 				for (int i = subsetSize; i > 0; i--) {
 					String first = remotesCopy.pop();
 					try {
-						Object o = Naming.lookup(first);
+						System.out.println("Trying to lookup "+ Ordinary.getRemote(Integer.parseInt(first)));
+						Object o = Naming.lookup(Ordinary.getRemote(Integer.parseInt(first)));
 						// should be true...
 						if (o instanceof Ordinary) {
 							Ordinary that = (Ordinary) o;
