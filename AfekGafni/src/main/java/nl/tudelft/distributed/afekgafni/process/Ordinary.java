@@ -33,14 +33,16 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 			synchronized(candidateMessages){
 				candidateMessages.add(msg);
 				candidateMessages.notify();
-
-				try { //make sure the ack is sent before returning
-					candidateMessages.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 			}
 		}
+		try { //make sure the ack is sent before returning
+			synchronized(candidateMessages){
+				candidateMessages.wait();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("done waiting");
 	}
 	
 	public static String getRemote(int nodeId) {
@@ -54,30 +56,24 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 		@Override
 		public void run() {
 			while(true){
-				if(link != null){
-					log("No link yet");
-					Candidate candidate = null;
-					try {
-						candidate = (Candidate) Naming.lookup(link);
-					} catch (MalformedURLException | RemoteException| NotBoundException e) {
-						e.printStackTrace();
-						return;
+				synchronized(candidateMessages) {
+					if(link != null){
+						Candidate candidate = null;
+						try {
+							candidate = (Candidate) Naming.lookup(link);
+						} catch (MalformedURLException | RemoteException| NotBoundException e) {
+							e.printStackTrace();
+							return;
+						}
+						try {
+							candidate.receive(new AckMessage());
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
 					}
-					log("Sending Ack to " + link);
-					try {
-						candidate.receive(new AckMessage());
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
-					synchronized(candidateMessages){
-						candidateMessages.notify();
-					}
-				}
-				synchronized(candidateMessages){
-					log("Checking messages");
 					if(!candidateMessages.isEmpty()){
 						log("Found at least one message");
-						CandidateMessage maxMsg = candidateMessages.stream().max((a, b) -> a.toString().compareTo(b.toString())).get();
+						CandidateMessage maxMsg = candidateMessages.stream().max((a, b) -> a.level > b.level ? 1 : a.level == b.level ? a.nodeId > b.nodeId ? 1 : -1 : -1).get();
 						log("Picked "+ maxMsg);
 						log("Comparing "+ maxMsg.level +" > "+ level +" && "+ maxMsg.nodeId +" > "+ nodeId);
 						if(maxMsg.level > level || (maxMsg.level == level && maxMsg.nodeId > nodeId)) {
@@ -90,6 +86,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 							link = null;
 						}
 					}
+					candidateMessages.notify();
 					try { //wait for more messages being sent
 						candidateMessages.wait();
 					} catch (InterruptedException e) {
