@@ -3,7 +3,7 @@ package nl.tudelft.distributed.afekgafni.process;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-abstract public class AbstractProcess<A> extends UnicastRemoteObject implements IProcess<A>{
+abstract public class AbstractProcess<A> extends UnicastRemoteObject implements IProcess<A> {
 	private static final long serialVersionUID = 1L;
 	protected int nodeId;
 
@@ -17,6 +17,6 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
 	}
 
 	public void log(String message) {
-		System.out.println("["+ this.getClass().getSimpleName() +" "+ nodeId +"] "+ message);
+		System.out.println("[" + this.getClass().getSimpleName() + " " + nodeId + "] " + message);
 	}
 }

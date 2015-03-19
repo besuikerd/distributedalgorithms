@@ -1,5 +1,8 @@
 package nl.tudelft.distributed.afekgafni.process;
 
+import nl.tudelft.distributed.afekgafni.message.AckMessage;
+import nl.tudelft.distributed.afekgafni.message.CandidateMessage;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -7,36 +10,32 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.tudelft.distributed.afekgafni.message.AckMessage;
-import nl.tudelft.distributed.afekgafni.message.CandidateMessage;
-
 public class Ordinary extends AbstractProcess<CandidateMessage> {
-	
+
 	private static final long serialVersionUID = -5756267872160895568L;
 
 	public Ordinary(int nodeId) throws RemoteException {
 		super(nodeId);
 	}
-	
-	private List<CandidateMessage> candidateMessages;
+
+	private final List<CandidateMessage> candidateMessages = new ArrayList<>();
 	private boolean initialized = false;
-	
+
 	@Override
 	public void receive(CandidateMessage msg) throws RemoteException {
-		log("Received message: "+ msg);
-		if(!initialized){
-			this.candidateMessages = new ArrayList<CandidateMessage>();
+		log("Received message: " + msg);
+		if (!initialized) {
 			candidateMessages.add(msg);
 			log("Starting thread ordinary process thread");
 			new Thread(new OrdinaryProcess()).start();
-		} else{
-			synchronized(candidateMessages){
+		} else {
+			synchronized (candidateMessages) {
 				candidateMessages.add(msg);
 				candidateMessages.notify();
 			}
 		}
 		try { //make sure the ack is sent before returning
-			synchronized(candidateMessages){
+			synchronized (candidateMessages) {
 				candidateMessages.wait();
 			}
 		} catch (InterruptedException e) {
@@ -44,24 +43,24 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 		}
 		System.out.println("done waiting");
 	}
-	
+
 	public static String getRemote(int nodeId) {
 		return getRemote(Ordinary.class.getName(), nodeId);
 	}
-	
-	private class OrdinaryProcess implements Runnable{
+
+	private class OrdinaryProcess implements Runnable {
 		String link = null;
 		int level = -1;
-		
+
 		@Override
 		public void run() {
-			while(true){
-				synchronized(candidateMessages) {
-					if(link != null){
-						IProcess<AckMessage> process = null;
+			while (true) {
+				synchronized (candidateMessages) {
+					if (link != null) {
+						IProcess<AckMessage> process;
 						try {
 							process = (IProcess<AckMessage>) Naming.lookup(link);
-						} catch (MalformedURLException | RemoteException| NotBoundException e) {
+						} catch (MalformedURLException | RemoteException | NotBoundException e) {
 							e.printStackTrace();
 							return;
 						}
@@ -77,22 +76,23 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 							e.printStackTrace();
 						}
 					}
-					if(!candidateMessages.isEmpty()){
+
+					if (!candidateMessages.isEmpty()) {
 						log("Found at least one message");
 						CandidateMessage maxMsg = candidateMessages.stream().max((a, b) -> a.level > b.level ? 1 : a.level == b.level ? a.nodeId > b.nodeId ? 1 : -1 : -1).get();
-						log("Picked "+ maxMsg);
-						log("Comparing "+ maxMsg.level +" > "+ level +" && "+ maxMsg.nodeId +" > "+ nodeId);
-						if(maxMsg.level > level || (maxMsg.level == level && maxMsg.nodeId > nodeId)) {
+						log("Picked " + maxMsg);
+						log("Comparing " + maxMsg.level + " > " + level + " && " + maxMsg.nodeId + " > " + nodeId);
+						if (maxMsg.level > level || (maxMsg.level == level && maxMsg.nodeId > nodeId)) {
 							log("Yes, this is a new high");
 							this.level = maxMsg.level;
 							Ordinary.this.nodeId = maxMsg.nodeId;
 							this.link = maxMsg.link;
-						} else{
+						} else {
 							log("Nope, candidate message failed. Resetting link");
 							link = null;
 						}
 					}
-					
+
 				}
 				level++;
 				candidateMessages.clear();

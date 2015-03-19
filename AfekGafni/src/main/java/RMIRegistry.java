@@ -4,7 +4,7 @@ import java.rmi.registry.Registry;
 
 
 public class RMIRegistry {
-	private static Registry createRegistry(){
+	private static Registry createRegistry() {
 		try {
 			return LocateRegistry.createRegistry(1337);
 		} catch (RemoteException e) {
@@ -12,11 +12,11 @@ public class RMIRegistry {
 			return null;
 		}
 	}
-	
+
 	public static final Registry reg = createRegistry();
-	
+
 	public static void main(String[] args) throws RemoteException, InterruptedException {
-		synchronized(reg){
+		synchronized (reg) {
 			reg.wait();
 		}
 	}

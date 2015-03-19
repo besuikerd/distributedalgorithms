@@ -32,10 +32,10 @@ public class AfekNode {
 	public static void start(int nodeId, boolean isCandidate, String[] otherNodes) {
 		try {
 			Ordinary ordinary = new Ordinary(nodeId);
-			System.out.println("Rebinding "+ Ordinary.getRemote(nodeId));
+			System.out.println("Rebinding " + Ordinary.getRemote(nodeId));
 			Naming.rebind(Ordinary.getRemote(nodeId), ordinary);
 			if (isCandidate) {
-				System.out.println("Rebinding "+ Candidate.getRemote(nodeId));
+				System.out.println("Rebinding " + Candidate.getRemote(nodeId));
 				Candidate candidate = new Candidate(nodeId, otherNodes);
 				Naming.rebind(Candidate.getRemote(nodeId), candidate);
 				candidate.startElection();

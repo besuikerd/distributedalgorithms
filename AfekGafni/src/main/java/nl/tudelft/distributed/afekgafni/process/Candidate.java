@@ -1,5 +1,8 @@
 package nl.tudelft.distributed.afekgafni.process;
 
+import nl.tudelft.distributed.afekgafni.message.AckMessage;
+import nl.tudelft.distributed.afekgafni.message.CandidateMessage;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -9,11 +12,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import nl.tudelft.distributed.afekgafni.message.AckMessage;
-import nl.tudelft.distributed.afekgafni.message.CandidateMessage;
-
 public class Candidate extends AbstractProcess<AckMessage> {
-	
+
 	private static final long serialVersionUID = 7632450835597789028L;
 	private String[] remotes;
 
@@ -21,9 +21,9 @@ public class Candidate extends AbstractProcess<AckMessage> {
 		super(nodeId);
 		this.remotes = remotes;
 	}
-	
-	private List<AckMessage> acknowledgements = new ArrayList<AckMessage>();
-	
+
+	private final List<AckMessage> acknowledgements = new ArrayList<>();
+
 
 	public void startElection() {
 		// Having a linked list is easier later on
@@ -35,7 +35,7 @@ public class Candidate extends AbstractProcess<AckMessage> {
 
 		while (true) {
 			level += 1;
-			log("At level "+ level);
+			log("At level " + level);
 			if (level % 2 == 0) {
 				log("Sending out messages...");
 				if (remotesCopy.size() == 0) {
@@ -47,7 +47,7 @@ public class Candidate extends AbstractProcess<AckMessage> {
 				for (int i = subsetSize; i > 0; i--) {
 					String first = remotesCopy.pop();
 					try {
-						System.out.println("Trying to lookup "+ Ordinary.getRemote(Integer.parseInt(first)));
+						System.out.println("Trying to lookup " + Ordinary.getRemote(Integer.parseInt(first)));
 						Object o = Naming.lookup(Ordinary.getRemote(Integer.parseInt(first)));
 						IProcess<CandidateMessage> that = (IProcess<CandidateMessage>) o;
 						that.receive(new CandidateMessage(level, nodeId, getRemote(nodeId)));
@@ -57,8 +57,8 @@ public class Candidate extends AbstractProcess<AckMessage> {
 					}
 				}
 			} else {
-				synchronized(acknowledgements){
-					if(acknowledgements.size() < subsetSize){
+				synchronized (acknowledgements) {
+					if (acknowledgements.size() < subsetSize) {
 						notElected();
 						return;
 					}
@@ -66,16 +66,16 @@ public class Candidate extends AbstractProcess<AckMessage> {
 			}
 		}
 	}
-	
+
 	@Override
-	public void receive(AckMessage msg) throws RemoteException{
+	public void receive(AckMessage msg) throws RemoteException {
 		System.out.println("received: " + msg);
-		
-		synchronized(acknowledgements){
+
+		synchronized (acknowledgements) {
 			acknowledgements.add(msg);
 		}
 	}
-	
+
 	public static String getRemote(int nodeId) {
 		return getRemote(Candidate.class.getName(), nodeId);
 	}
@@ -86,8 +86,8 @@ public class Candidate extends AbstractProcess<AckMessage> {
 	public void elected() {
 		System.out.println("ME SO HAPPY; I AM ALLOWED TO DO STUFF!");
 	}
-	
-	public void notElected(){
+
+	public void notElected() {
 		System.out.println("Nope, I suck");
 	}
 }
