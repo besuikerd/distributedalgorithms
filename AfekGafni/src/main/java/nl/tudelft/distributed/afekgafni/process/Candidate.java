@@ -86,10 +86,10 @@ public class Candidate extends AbstractProcess<AckMessage> {
 	 * Called when elected
 	 */
 	public void elected() {
-		log("---------------ME SO HAPPY; I AM ALLOWED TO DO STUFF!---------------");
+		log("--------------- I GOT ELECTED! ---------------");
 	}
 
 	public void notElected() {
-		log("---------------Nope, I suck---------------");
+		log("--------------- NOPE, NOT ELECTED :'( ---------------");
 	}
 }
