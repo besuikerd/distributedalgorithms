@@ -27,6 +27,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 		if(!initialized){
 			this.candidateMessages = new ArrayList<CandidateMessage>();
 			candidateMessages.add(msg);
+			log("Starting thread ordinary process thread");
 			new Thread(new OrdinaryProcess()).start();
 		} else{
 			synchronized(candidateMessages){
@@ -62,7 +63,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						e.printStackTrace();
 						return;
 					}
-					log("Sending Ack to "+ link);
+					log("Sending Ack to " + link);
 					try {
 						candidate.receive(new AckMessage());
 					} catch (RemoteException e) {
@@ -74,13 +75,19 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 				}
 				level++;
 				synchronized(candidateMessages){
+					log("Checking messages");
 					if(!candidateMessages.isEmpty()){
+						log("Found at least one message");
 						CandidateMessage maxMsg = candidateMessages.stream().max((a, b) -> a.toString().compareTo(b.toString())).get();
+						log("Picked "+ maxMsg);
+						log("Comparing "+ maxMsg.level +" > "+ level +" && "+ maxMsg.nodeId +" > "+ nodeId);
 						if(maxMsg.level > level && maxMsg.nodeId > nodeId){
+							log("Yes, this is a new high");
 							this.level = maxMsg.level;
 							Ordinary.this.nodeId = maxMsg.nodeId;
 							this.link = maxMsg.link;
 						} else{
+							log("Nope, candidate message failed. Resetting link");
 							link = null;
 						}
 					}

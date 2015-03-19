@@ -51,7 +51,7 @@ public class Candidate extends AbstractProcess<AckMessage> {
 						Object o = Naming.lookup(Ordinary.getRemote(Integer.parseInt(first)));
 						// should be true...
 						log(o.toString());
-						log("Sending to Ordinary "+ ((Ordinary) o).nodeId);
+						//log("Sending to Ordinary "+ ((Ordinary) o).nodeId);
 						IProcess<CandidateMessage> that = (IProcess<CandidateMessage>) o;
 						that.receive(new CandidateMessage(level, nodeId, getRemote(nodeId)));
 					} catch (NotBoundException | MalformedURLException | RemoteException e) {
