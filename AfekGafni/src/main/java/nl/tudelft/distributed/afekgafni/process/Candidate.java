@@ -47,10 +47,11 @@ public class Candidate extends AbstractProcess<AckMessage> {
 				for (int i = subsetSize; i > 0; i--) {
 					String first = remotesCopy.pop();
 					try {
-						System.out.println("Trying to lookup " + Ordinary.getRemote(Integer.parseInt(first)));
+						log("Trying to lookup " + Ordinary.getRemote(Integer.parseInt(first)));
 						Object o = Naming.lookup(Ordinary.getRemote(Integer.parseInt(first)));
 						IProcess<CandidateMessage> that = (IProcess<CandidateMessage>) o;
 						that.receive(new CandidateMessage(level, nodeId, getRemote(nodeId)));
+						log("Executed receive function");
 					} catch (NotBoundException | MalformedURLException | RemoteException e) {
 						e.printStackTrace();
 						return;
@@ -69,7 +70,7 @@ public class Candidate extends AbstractProcess<AckMessage> {
 
 	@Override
 	public void receive(AckMessage msg) throws RemoteException {
-		System.out.println("received: " + msg);
+		log("received: " + msg);
 
 		synchronized (acknowledgements) {
 			acknowledgements.add(msg);
@@ -84,10 +85,10 @@ public class Candidate extends AbstractProcess<AckMessage> {
 	 * Called when elected
 	 */
 	public void elected() {
-		System.out.println("ME SO HAPPY; I AM ALLOWED TO DO STUFF!");
+		log("---------------ME SO HAPPY; I AM ALLOWED TO DO STUFF!---------------");
 	}
 
 	public void notElected() {
-		System.out.println("Nope, I suck");
+		log("---------------Nope, I suck---------------");
 	}
 }

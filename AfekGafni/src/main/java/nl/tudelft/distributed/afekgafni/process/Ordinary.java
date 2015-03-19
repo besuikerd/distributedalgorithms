@@ -25,6 +25,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 	public void receive(CandidateMessage msg) throws RemoteException {
 		log("Received message: " + msg);
 		if (!initialized) {
+			initialized = true;
 			candidateMessages.add(msg);
 			log("Starting thread ordinary process thread");
 			new Thread(new OrdinaryProcess()).start();
@@ -41,7 +42,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("done waiting");
+		log("Done waiting");
 	}
 
 	public static String getRemote(int nodeId) {
@@ -69,12 +70,12 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						} catch (RemoteException e) {
 							e.printStackTrace();
 						}
-						candidateMessages.notify();
-						try { //wait for more messages being sent
-							candidateMessages.wait();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+					}
+					candidateMessages.notify();
+					try { //wait for more messages being sent
+						candidateMessages.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 
 					if (!candidateMessages.isEmpty()) {
