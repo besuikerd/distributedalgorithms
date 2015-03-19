@@ -22,10 +22,8 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 	private boolean initialized = false;
 	
 	@Override
-	public void receive(CandidateMessage msg) throws RemoteException{
-		
-		System.out.println("received: " + msg);
-		
+	public void receive(CandidateMessage msg) throws RemoteException {
+		log("Received message: "+ msg);
 		if(!initialized){
 			this.candidateMessages = new ArrayList<CandidateMessage>();
 			candidateMessages.add(msg);
@@ -34,7 +32,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 			synchronized(candidateMessages){
 				candidateMessages.add(msg);
 				candidateMessages.notify();
-				
+
 				try { //make sure the ack is sent before returning
 					candidateMessages.wait();
 				} catch (InterruptedException e) {
@@ -56,6 +54,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 		public void run() {
 			while(true){
 				if(link != null){
+					log("No link yet");
 					Candidate candidate = null;
 					try {
 						candidate = (Candidate) Naming.lookup(link);
@@ -63,6 +62,7 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 						e.printStackTrace();
 						return;
 					}
+					log("Sending Ack to "+ link);
 					try {
 						candidate.receive(new AckMessage());
 					} catch (RemoteException e) {

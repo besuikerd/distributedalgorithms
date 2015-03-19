@@ -15,4 +15,8 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
 	public static String getRemote(String name, int nodeId) {
 		return "rmi://localhost:1337/" + name + "_" + nodeId;
 	}
+
+	public void log(String message) {
+		System.out.println("["+ this.getClass().getSimpleName() +" "+ nodeId +"] "+ message);
+	}
 }
