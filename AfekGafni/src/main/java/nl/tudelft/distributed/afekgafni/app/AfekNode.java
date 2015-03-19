@@ -20,13 +20,13 @@ public class AfekNode {
 				boolean isCandidate = args[1].toLowerCase().equals("candidate");
 				String[] otherNodes = new String[args.length - 2];
 				System.arraycopy(args, 2, otherNodes, 0, otherNodes.length);
+				Thread.sleep(5000);
 				start(nodeId, isCandidate, otherNodes);
 			} catch(NumberFormatException e){
 				System.out.println(USAGE);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			
-			
-			
 		} else{
 			System.out.println(USAGE);
 		}
