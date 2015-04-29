@@ -48,7 +48,7 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 			List<ProposalMessage> proposalMessages = await(ProposalMessage.class, n - f);
 			received0 = (int) proposalMessages.stream().filter(x -> x.w != null && !x.w).count();
 			received1 = (int) proposalMessages.stream().filter(x -> x.w != null && x.w).count();
-			//TODO remove it :shipit: int receivedUnknown = 0;
+
 			if ((received0 + received1) > f){
 				majorityReceived = Math.max(received0, received1);
 				// find what was actually received
@@ -65,6 +65,13 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 
 	@Override
 	protected <B extends IMessage> void broadcast(B msg) {
+		long sleepDelay = 200;
+
+		try {
+			Thread.sleep((long) (Math.random() * sleepDelay));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		switch(behaviour){
 			case JERK:
 				msg.setValue(msg.getValue() == null ? Math.random() > 0.5 : !msg.getValue());
@@ -73,6 +80,11 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 				break;
 			default:
 				super.broadcast(msg);
+		}
+		try {
+			Thread.sleep((long) (Math.random() * sleepDelay));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 }
