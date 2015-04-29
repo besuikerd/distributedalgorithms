@@ -11,11 +11,10 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
     private static final long serialVersionUID = 1L;
 
     protected List<IProcess<A>> processes;
-    protected ProcessBehaviour behaviour;
     protected int nodeId;
     private Map<Class<? extends A>, List<A>> buffer;
 
-    public AbstractProcess(List<IProcess<A>> processes, ProcessBehaviour behaviour, int nodeId) throws RemoteException {
+    public AbstractProcess(List<IProcess<A>> processes, int nodeId) throws RemoteException {
         super();
         this.nodeId = nodeId;
         this.processes = processes;
@@ -24,10 +23,14 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
 
 
 
-    protected <B extends A> void broadcast(B msg) throws RemoteException{
+    protected <B extends A> void broadcast(B msg){
         for(int i = 0 ; i < processes.size() ; i++){
             if(i != nodeId){
-                processes.get(i).receive(msg);
+                try {
+                    processes.get(i).receive(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

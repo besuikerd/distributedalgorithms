@@ -5,27 +5,35 @@ import agreement.messages.NotificationMessage;
 import agreement.messages.ProposalMessage;
 
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Random;
 
-public class RandomizedByzantine {
-	private final AbstractProcess process;
-	public int n = 0;		// Number of processes
-	public int f = 0;		// Max allowed faulty processes
-	
-	public RandomizedByzantine(AbstractProcess process, int processes, int faultTolerance) {
-		this.n = processes;
-		this.f = faultTolerance;
-		this.process = process;
+public class RandomizedByzantine extends AbstractProcess<IMessage> implements Runnable{
+	public int faultTolerance = 0;		// Max allowed faulty processes
+	public boolean opinion;
+	protected ProcessBehaviour behaviour;
+
+	public RandomizedByzantine(List<IProcess<A>> iProcesses, boolean opinion, int nodeId, int faultTolerance, ProcessBehaviour behaviour) throws RemoteException {
+		super(iProcesses, nodeId);
+		this.faultTolerance = faultTolerance;
+		this.opinion = opinion;
+		this.behaviour = behaviour;
 	}
 
-	public boolean doWork(boolean v) {
+	@Override
+	public void run() {
+		doWork(opinion, faultTolerance);
+	}
+
+	public boolean doWork(boolean v, int f) {
+		int n = processes.size();
 		int r = 1;
 		boolean decided = false;
 		while (true) {
 			broadcast(new NotificationMessage(r, v));
-			// TODO: wait for  n-f NotificationMessage(r, *)
-			int received0 = 0;
-			int received1 = 0;
+			List<NotificationMessage> notificationMessages = await(NotificationMessage.class, n - f);
+			int received1 = (int) notificationMessages.stream().filter(x -> x.v).count();
+			int received0 = notificationMessages.size() - received1;
 			int majorityReceived;
 			if ((received0 + received1) > (n + f) / 2) {
 				majorityReceived = Math.max(received0, received1);
@@ -37,13 +45,11 @@ public class RandomizedByzantine {
 			}
 			if (decided) {
 				return v;
-			} else {
-				// TODO: wait for n-f ProposalMessage(r, *)
 			}
-
-			received0 = 0;
-			received1 = 0;
-			int receivedUnknown = 0;
+			List<ProposalMessage> proposalMessages = await(ProposalMessage.class, n - f);
+			received0 = (int) proposalMessages.stream().filter(x -> x.w != null && !x.w).count();
+			received1 = (int) proposalMessages.stream().filter(x -> x.w != null && x.w).count();
+			//TODO remove it :shipit: int receivedUnknown = 0;
 			if ((received0 + received1) > f){
 				majorityReceived = Math.max(received0, received1);
 				// find what was actually received
@@ -55,14 +61,6 @@ public class RandomizedByzantine {
 				v = Math.round(Math.random()) == 1;
 			}
 			r++;
-		}
-	}
-
-	public void broadcast(IMessage message) {
-		try {
-			process.broadcast(message);
-		} catch (RemoteException e) {
-			e.printStackTrace();
 		}
 	}
 }
