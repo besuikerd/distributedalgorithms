@@ -78,6 +78,7 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 				super.broadcast(msg);
 			case LAZY:
 				break;
+			case NICE:
 			default:
 				super.broadcast(msg);
 		}
