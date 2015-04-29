@@ -38,7 +38,7 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
             List<A> list = null;
             if((list = buffer.get(msg.getClass())) == null){
                 list = new ArrayList<>();
-                buffer.put(msg.getClass(), list);
+                buffer.put((Class<? extends A>) msg.getClass(), list);
             }
             list.add(msg);
             buffer.notify();
@@ -51,7 +51,7 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
                 if (buffer.containsKey(cls)){
                     List<B> list = (List<B>) buffer.get(cls);
                     if(list.size() >= n){
-                        return n;
+                        return list;
                     } else{
                         try {
                             buffer.wait();
@@ -68,7 +68,6 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
                 }
             }
         }
-        return null;
     }
     
     /*
