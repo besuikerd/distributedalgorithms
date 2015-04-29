@@ -6,16 +6,18 @@ import java.util.List;
 
 abstract public class AbstractProcess<A> extends UnicastRemoteObject implements IProcess<A> {
     private static final long serialVersionUID = 1L;
-    protected int nodeId;
-    protected List<IProcess<A>> processes;
 
-    public AbstractProcess(List<IProcess<A>> processes, int nodeId) throws RemoteException {
+    protected List<IProcess<A>> processes;
+    protected ProcessBehaviour behaviour;
+    protected int nodeId;
+
+    public AbstractProcess(List<IProcess<A>> processes, ProcessBehaviour behaviour, int nodeId) throws RemoteException {
         super();
         this.nodeId = nodeId;
         this.processes = processes;
     }
 
-    protected void broadcast(A msg) {
+    protected void broadcast(A msg) throws RemoteException{
         for(int i = 0 ; i < processes.size() ; i++){
             if(i != nodeId){
                 processes.get(i).receive(msg);
