@@ -94,11 +94,11 @@ public class Ordinary extends AbstractProcess<CandidateMessage> {
 							candidateMessages.notify();
 							link = null;
 						}
+						log("Increasing level to "+ (level + 1));
+						level++;
+						candidateMessages.clear();
 					}
-
 				}
-				level++;
-				candidateMessages.clear();
 			}
 		}
 	}
