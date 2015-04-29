@@ -9,4 +9,14 @@ public class ProposalMessage implements IMessage {
 		this.round = round;
 		this.w = w;
 	}
+
+	@Override
+	public Boolean getValue() {
+		return w;
+	}
+
+	@Override
+	public void setValue(Boolean newValue) {
+		this.w = newValue;
+	}
 }

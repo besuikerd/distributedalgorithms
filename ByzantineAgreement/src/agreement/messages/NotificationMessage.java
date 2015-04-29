@@ -9,4 +9,14 @@ public class NotificationMessage implements IMessage {
 		this.round = round;
 		this.v = v;
 	}
+
+	@Override
+	public Boolean getValue() {
+		return v;
+	}
+
+	@Override
+	public void setValue(Boolean newValue) {
+		this.v = newValue;
+	}
 }

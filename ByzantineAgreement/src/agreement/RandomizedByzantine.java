@@ -6,14 +6,13 @@ import agreement.messages.ProposalMessage;
 
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Random;
 
 public class RandomizedByzantine extends AbstractProcess<IMessage> implements Runnable{
 	public int faultTolerance = 0;		// Max allowed faulty processes
 	public boolean opinion;
 	protected ProcessBehaviour behaviour;
 
-	public RandomizedByzantine(List<IProcess<A>> iProcesses, boolean opinion, int nodeId, int faultTolerance, ProcessBehaviour behaviour) throws RemoteException {
+	public RandomizedByzantine(List<IProcess<IMessage>> iProcesses, boolean opinion, int nodeId, int faultTolerance, ProcessBehaviour behaviour) throws RemoteException {
 		super(iProcesses, nodeId);
 		this.faultTolerance = faultTolerance;
 		this.opinion = opinion;
@@ -61,6 +60,19 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 				v = Math.round(Math.random()) == 1;
 			}
 			r++;
+		}
+	}
+
+	@Override
+	protected <B extends IMessage> void broadcast(B msg) {
+		switch(behaviour){
+			case JERK:
+				msg.setValue(msg.getValue() == null ? Math.random() > 0.5 : !msg.getValue());
+				super.broadcast(msg);
+			case LAZY:
+				break;
+			default:
+				super.broadcast(msg);
 		}
 	}
 }
