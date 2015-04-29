@@ -4,9 +4,19 @@ import agreement.messages.IMessage;
 import agreement.messages.NotificationMessage;
 import agreement.messages.ProposalMessage;
 
+import java.rmi.RemoteException;
+import java.util.Random;
+
 public class RandomizedByzantine {
+	private final AbstractProcess process;
 	public int n = 0;		// Number of processes
 	public int f = 0;		// Max allowed faulty processes
+	
+	public RandomizedByzantine(AbstractProcess process, int processes, int faultTolerance) {
+		this.n = processes;
+		this.f = faultTolerance;
+		this.process = process;
+	}
 
 	public boolean doWork(boolean v) {
 		int r = 1;
@@ -49,6 +59,10 @@ public class RandomizedByzantine {
 	}
 
 	public void broadcast(IMessage message) {
-
+		try {
+			process.broadcast(message);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 }
