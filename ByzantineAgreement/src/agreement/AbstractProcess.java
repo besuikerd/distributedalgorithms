@@ -25,12 +25,10 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
 
     protected <B extends A> void broadcast(B msg){
         for(int i = 0 ; i < processes.size() ; i++){
-            if(i != nodeId){
-                try {
-                    processes.get(i).receive(msg);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+            try {
+                processes.get(i).receive(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     }
