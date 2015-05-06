@@ -47,6 +47,8 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
     }
 
     protected <B extends A> List<B> await(Class<? extends B> cls, int n){
+        System.out.println("n is " + n);
+
         if(n == 0){
             return new ArrayList<>();
         }
@@ -55,7 +57,7 @@ abstract public class AbstractProcess<A> extends UnicastRemoteObject implements 
                 if (buffer.containsKey(cls)){
                     List<B> list = (List<B>) buffer.get(cls);
                     if(list.size() >= n){
-                        list.clear();
+                        buffer.remove(cls);
                         return list;
                     } else{
                         try {
