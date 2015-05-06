@@ -39,8 +39,8 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 			int received1 = (int) notificationMessages.stream().filter(x -> x.v).count();
 			int received0 = notificationMessages.size() - received1;
 
-			log("received true: " + received1);
-			log("received false: " + received0);
+			/*log("received true: " + received1);
+			log("received false: " + received0);*/
 
 			int majorityReceived;
 			if ((received0 + received1) > (n + f) / 2) {
@@ -55,9 +55,9 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 				log("decided " + v);
 				return v;
 			}
-			log("awaiting proposal");
+			//log("awaiting proposal");
 			List<ProposalMessage> proposalMessages = await(ProposalMessage.class, n - f);
-			log("got "+ proposalMessages.size() +" proposals");
+			//log("got "+ proposalMessages.size() +" proposals");
 			received0 = (int) proposalMessages.stream().filter(x -> x.w != null && !x.w).count();
 			received1 = (int) proposalMessages.stream().filter(x -> x.w != null && x.w).count();
 
@@ -86,7 +86,7 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 		}
 		switch(behaviour){
 			case JERK:
-				msg.setValue(msg.getValue() == null ? Math.random() > 0.5 : !msg.getValue());
+				msg.setValue(msg.getValue() == null ? Math.round(Math.random()) == 1 : !msg.getValue());
 				super.broadcast(msg);
 			case LAZY:
 				break;
