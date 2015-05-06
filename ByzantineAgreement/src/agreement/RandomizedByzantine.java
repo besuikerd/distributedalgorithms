@@ -30,9 +30,14 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 		boolean decided = false;
 		while (true) {
 			broadcast(new NotificationMessage(r, v));
+
 			List<NotificationMessage> notificationMessages = await(NotificationMessage.class, n - f);
 			int received1 = (int) notificationMessages.stream().filter(x -> x.v).count();
 			int received0 = notificationMessages.size() - received1;
+
+			System.out.println("received true: " + received1);
+			System.out.println("received false: " + received0);
+
 			int majorityReceived;
 			if ((received0 + received1) > (n + f) / 2) {
 				majorityReceived = Math.max(received0, received1);
@@ -43,9 +48,12 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 				broadcast(new ProposalMessage(r, null));
 			}
 			if (decided) {
+				System.out.println("decided " + v);
 				return v;
 			}
+			System.out.println("awaiting proposal");
 			List<ProposalMessage> proposalMessages = await(ProposalMessage.class, n - f);
+			System.out.println("got proposals");
 			received0 = (int) proposalMessages.stream().filter(x -> x.w != null && !x.w).count();
 			received1 = (int) proposalMessages.stream().filter(x -> x.w != null && x.w).count();
 

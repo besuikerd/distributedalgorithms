@@ -13,9 +13,7 @@ public class ByzantineAgreementTest {
     public static final String HOST = "rmi://localhost:1337/";
 
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
-		if (System.getSecurityManager() == null) {
-			System.setSecurityManager(new SecurityManager());
-		}
+
         try {
             if (args.length == 5) {
                 int arg = 0;
@@ -37,7 +35,7 @@ public class ByzantineAgreementTest {
                 List<IProcess<IMessage>> nodes = new ArrayList<>();
                 RandomizedByzantine byzantine = new RandomizedByzantine(nodes, initialOpinion, nodeId, tolerance, processBehaviour);
                 Naming.rebind(HOST + nodeId, byzantine);
-                Thread.sleep(5000);
+                Thread.sleep(1000);
                 for(int i = 0 ; i < numberOfNodes ; i++){
                     if(i != nodeId) {
                         IProcess<IMessage> process = (IProcess<IMessage>) Naming.lookup(HOST + i);
@@ -46,7 +44,6 @@ public class ByzantineAgreementTest {
                         nodes.add(byzantine);
                     }
                 }
-
                 new Thread(byzantine).start();
             } else {
                 System.out.println("usage nodeID #nodes initialValue faultTolerance");
