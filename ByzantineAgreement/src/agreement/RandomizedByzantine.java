@@ -24,6 +24,10 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 		doWork(opinion, faultTolerance);
 	}
 
+	public void log(String message) {
+		System.out.println("["+ nodeId +"] "+ message);
+	}
+
 	public boolean doWork(boolean v, int f) {
 		int n = processes.size();
 		int r = 1;
@@ -35,8 +39,8 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 			int received1 = (int) notificationMessages.stream().filter(x -> x.v).count();
 			int received0 = notificationMessages.size() - received1;
 
-			System.out.println("received true: " + received1);
-			System.out.println("received false: " + received0);
+			log("received true: " + received1);
+			log("received false: " + received0);
 
 			int majorityReceived;
 			if ((received0 + received1) > (n + f) / 2) {
@@ -48,12 +52,12 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 				broadcast(new ProposalMessage(r, null));
 			}
 			if (decided) {
-				System.out.println("decided " + v);
+				log("decided " + v);
 				return v;
 			}
-			System.out.println("awaiting proposal");
+			log("awaiting proposal");
 			List<ProposalMessage> proposalMessages = await(ProposalMessage.class, n - f);
-			System.out.println("got proposals");
+			log("got "+ proposalMessages.size() +" proposals");
 			received0 = (int) proposalMessages.stream().filter(x -> x.w != null && !x.w).count();
 			received1 = (int) proposalMessages.stream().filter(x -> x.w != null && x.w).count();
 
