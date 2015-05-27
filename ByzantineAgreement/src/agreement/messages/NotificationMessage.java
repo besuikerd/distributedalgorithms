@@ -19,4 +19,9 @@ public class NotificationMessage implements IMessage {
 	public void setValue(Boolean newValue) {
 		this.v = newValue;
 	}
+
+	@Override
+	public int getRound() {
+		return round;
+	}
 }

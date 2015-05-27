@@ -16,6 +16,11 @@ public class ProposalMessage implements IMessage {
 	}
 
 	@Override
+	public int getRound() {
+		return round;
+	}
+
+	@Override
 	public void setValue(Boolean newValue) {
 		this.w = newValue;
 	}
