@@ -35,7 +35,7 @@ public class ByzantineAgreementTest {
                 List<IProcess<IMessage>> nodes = new ArrayList<>();
                 RandomizedByzantine byzantine = new RandomizedByzantine(nodes, initialOpinion, nodeId, tolerance, processBehaviour);
                 Naming.rebind(HOST + nodeId, byzantine);
-                Thread.sleep(60000);
+                Thread.sleep(3000);
                 for(int i = 0 ; i < numberOfNodes ; i++){
                     if(i != nodeId) {
                         IProcess<IMessage> process = (IProcess<IMessage>) Naming.lookup(HOST + i);

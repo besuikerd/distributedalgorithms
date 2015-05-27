@@ -1,5 +1,5 @@
-if (process.argv.length <= 6) {
-    console.log('Usage: node createBash.js AMOUNT_NODES PERCENTAGE_NICE PERCENTAGE_LAZY PERCENTAGE_JERK F');
+if (process.argv.length <= 7) {
+    console.log('Usage: node createBash.js AMOUNT_NODES PERCENTAGE_NICE PERCENTAGE_LAZY PERCENTAGE_JERK F PERCENTAGE_FALSE');
     process.exit(0);
 }
 
@@ -10,6 +10,7 @@ var nice = parseFloat(process.argv[3]);
 var lazy = parseFloat(process.argv[4]);
 var jerk = parseFloat(process.argv[5]);
 var f = parseInt(process.argv[6]);
+var percentageFalse = parseFloat(process.argv[7]);
 
 var outputNode = function(nodeID, totalNodes, initialBelief, f, behaviour) {
     console.log('java agreement.ByzantineAgreementTest '+ nodeID +' '+ totalNodes +' '+ (initialBelief ? '1' : '0') +' '+ f +' '+ behaviour +' &');
@@ -18,14 +19,18 @@ var outputNode = function(nodeID, totalNodes, initialBelief, f, behaviour) {
 var totalNice = Math.round(nice * amount);
 var totalLazy = Math.round(lazy * amount);
 var totalJerk = Math.round(jerk * amount);
+var totalFalse = Math.round(percentageFalse * totalNice);
+var totalTrue = totalNice - totalFalse;
 
 if (totalNice + totalLazy + totalJerk != amount) {
     console.error(totalNice +' + '+ totalLazy +' + '+ totalJerk +' != '+ amount +'; try to use different percentages');
     process.exit(1);
 }
-
-for (var i = 0; i < totalNice; i++) {
+for (var i = 0; i < totalFalse; i++) {
     outputNode(i, amount, false, f, 'NICE');
+}
+for (var i = totalFalse; i < totalNice; i++) {
+    outputNode(i, amount, true, f, 'NICE');
 }
 for (var i = totalNice; i < totalNice + totalLazy; i++) {
     outputNode(i, amount, false, f, 'LAZY');
