@@ -7,13 +7,14 @@ import agreement.messages.ProposalMessage;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class RandomizedByzantine extends AbstractProcess<IMessage> implements Runnable{
-	public int faultTolerance = 0;		// Max allowed faulty processes
+public class RandomizedByzantine extends AbstractProcess<IMessage> implements Runnable {
+	public int faultTolerance = 0;        // Max allowed faulty processes
 	public boolean opinion;
 	protected ProcessBehaviour behaviour;
 
 	public RandomizedByzantine(List<IProcess<IMessage>> iProcesses, boolean opinion, int nodeId, int faultTolerance, ProcessBehaviour behaviour) throws RemoteException {
 		super(iProcesses, nodeId);
+		log("Starting with " + opinion + " in " + behaviour.name() + "-mode");
 		this.faultTolerance = faultTolerance;
 		this.opinion = opinion;
 		this.behaviour = behaviour;
@@ -25,7 +26,7 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 	}
 
 	public void log(String message) {
-		System.out.println("["+ nodeId +"] "+ message);
+		System.out.println("[" + nodeId + "] " + message);
 	}
 
 	public boolean doWork(boolean v, int f) {
@@ -52,7 +53,7 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 				broadcast(new ProposalMessage(r, null));
 			}
 			if (decided) {
-				log("decided " + v);
+				log("decided " + v + " after " + r + " rounds");
 				return v;
 			}
 			//log("awaiting proposal");
@@ -61,15 +62,17 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 			received0 = (int) proposalMessages.stream().filter(x -> x.w != null && !x.w).count();
 			received1 = (int) proposalMessages.stream().filter(x -> x.w != null && x.w).count();
 
-			if ((received0 + received1) > f){
+			if ((received0 + received1) > f) {
 				majorityReceived = Math.max(received0, received1);
 				// find what was actually received
 				v = received1 == majorityReceived;
-				if (majorityReceived > 3 * f){
+				if (majorityReceived > 3 * f) {
 					decided = true;
 				}
 			} else {
+				boolean oldV = v;
 				v = Math.round(Math.random()) == 1;
+				log("Switched from v = " + oldV + " to " + v);
 			}
 			r++;
 		}
@@ -84,7 +87,7 @@ public class RandomizedByzantine extends AbstractProcess<IMessage> implements Ru
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		switch(behaviour){
+		switch (behaviour) {
 			case JERK:
 				msg.setValue(msg.getValue() == null ? Math.round(Math.random()) == 1 : !msg.getValue());
 				super.broadcast(msg);
